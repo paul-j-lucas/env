@@ -1,0 +1,63 @@
+#! /bin/sh
+##
+#   Script:   pjl-install -- install a git repo
+#   Version:  1.0
+#
+#   Author:   Paul J. Lucas
+##
+
+set -e # stop on error
+
+GIT_HTTPS="https://github.com/paul-j-lucas"
+GIT_SSH="git@github.com:paul-j-lucas"
+
+GIT_CLONE=$GIT_HTTPS
+ME=`basename $0`
+SRC="$HOME/src"
+
+###############################################################################
+
+install() {
+  INSTALL_REPO=$1
+  INSTALL_DIR=$2
+  [ -n "$INSTALL_DIR" ] || INSTALL_DIR=$INSTALL_REPO
+  cd "$SRC"
+  [ -d "$INSTALL_DIR" ] || {
+    git clone $GIT_CLONE/$INSTALL_REPO.git "$INSTALL_DIR"
+    cd $INSTALL_DIR
+    [ -e "configure.ac" -a ! -e "configure" ] && autoreconf -fiv
+    [ -e "configure" ] && ./configure
+    [ -e "Makefile" ] && make
+  }
+}
+
+usage() {
+  cat >&2 <<END
+usage: $ME [-s] repo ...
+
+-s: Clone with SSH rather than HTTPS.
+END
+  exit $1
+}
+
+###############################################################################
+
+while getopts s opt
+do
+  case $opt in
+  s)  GIT_CLONE=$GIT_SSH ;;
+  ?)  usage 1 ;;
+  esac
+done
+shift `expr $OPTIND - 1`
+[ $# -gt 0 ] || usage 1
+
+########## Do it.
+
+mkdir -p "$SRC"
+for repo in $*
+do install $repo
+done
+
+###############################################################################
+# vim:set et sw=2 ts=2:

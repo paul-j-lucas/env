@@ -1,0 +1,16 @@
+#! /bin/sh
+##
+#   Script:   gsnr -- global search 'n' replace
+#   Version:  1.0.1
+##
+
+ME=`basename $0`
+[ $# -ge 3 ] || { echo "usage: $ME str1 str2 files" >&2; exit 1; }
+
+from=$1; to=$2; shift 2
+
+for i in $*
+do overwrite "$i" sed "s!$from!$to!g" "$i"
+done
+
+# vim:set et sw=2 ts=2:

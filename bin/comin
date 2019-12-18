@@ -1,0 +1,13 @@
+#! /bin/sh
+##
+# comin -- uncomment out lines of code
+#
+# This is meant to be used as a filter for a text editor.  For example, to
+# uncomment out a block of code using vi, do:
+#
+#   !<motion>comin
+##
+
+exec sed 's!^#/\*\(.*\)\*/$!\1!'
+
+# vim:set et sw=2 ts=2:

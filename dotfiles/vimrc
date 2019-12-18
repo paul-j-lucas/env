@@ -1,0 +1,186 @@
+so ~/.exrc
+filetype on
+filetype indent off
+filetype plugin off                     " Turning this on sets formatoptions.
+
+"""""""""" Keyboard Mappings
+
+" These make the arrow keys work.
+map <Esc>[A <Up>
+map <Esc>[B <Down>
+map <Esc>[C <Right>
+map <Esc>[D <Left>
+
+"""""""""" Options
+
+  se noautoread
+  se noautowriteall
+  se   background=dark
+  se nobackup
+if exists("+cindent")
+  se nocindent
+endif
+  se   cmdheight=1
+  se   complete=.,w,b,u
+if exists("+completeopt")
+  se   completeopt=menu,preview
+endif
+if exists("+concealcursor")
+  se   concealcursor=
+endif
+  se nocopyindent
+  se   cpoptions=aABceFs
+if exists("+cursorcolumn")
+  se nocursorcolumn
+endif
+if exists("+cursorline")
+  se nocursorline
+endif
+if exists("+diffopt")
+  se   diffopt=filler
+endif
+  se noexpandtab
+  se   equalalways
+  se   esckeys
+if exists("+fillchars")
+  se   fillchars=diff:.
+endif
+if exists("+foldenable")
+  se nofoldenable
+endif
+if exists("+foldminlines")
+  se   foldminlines=99999
+endif
+  se   formatoptions=
+  se   formatprg=wrapc
+  se nogdefault
+if exists("+hlsearch")
+  se   hlsearch                         " Highlight all search matches.
+endif
+  se noignorecase
+if exists("+incsearch")
+  se noincsearch
+endif
+  se noinfercase
+  se noinsertmode
+  se   laststatus=2                     " Always display status line.
+if exists("+lisp")
+  se nolisp
+endif
+  se   listchars=tab:>.,eol:$
+  se   magic
+  se   matchpairs=(:),{:},[:],<:>
+  se   modeline
+  se   modelines=1
+if exists("+numberwidth")
+  se   numberwidth=4                    " Number of columns for line numbers.
+endif
+  se   pastetoggle=<F2>
+  se   path=,,.,/usr/include/**
+  se nopreserveindent
+if exists("+pumheight")
+  se   pumheight=0                      " Pop-up menu height (0 = use all).
+endif
+  se   report=0                         " Always report number of lines changed.
+  se   restorescreen
+if exists("+ruler")
+  se   ruler
+endif
+  se   scrolljump=1
+  se   scrolloff=0
+  se   shiftround
+  se   shortmess=fiIlmnoOrtTx
+if exists("+showcmd")
+  se   showcmd
+endif
+  se nosmartcase
+if exists("+smartindent")
+  se nosmartindent
+endif
+if exists("+splitbelow")
+  se   splitbelow
+endif
+  se   startofline
+  se   suffixes=.c,.cpp                 " So .h files have higher priority.
+if exists("+viminfo")
+  se   viminfo=
+endif
+if exists("+wildignore")
+  se   wildignore=*.class,*.swp,*.o
+endif
+if exists("+wildmenu")
+  se   wildmenu
+endif
+  se   wildmode=full
+  se   wrap
+
+"""""""""" Highlighting
+
+" Set number of terminal colors.
+se t_Co=8
+
+" Turn on syntax highlighting.
+syn enable
+
+" Turn off pathentheses highlighting.
+let loaded_matchparen=1
+
+" Turn off search highlighting when switching buffers.
+au BufNewFile,BufReadPost * noh
+
+" Generic programming
+hi Boolean          cterm=NONE ctermfg=NONE
+hi Character        cterm=NONE ctermfg=NONE
+hi Comment          cterm=NONE ctermfg=DarkGreen
+hi Conditional      cterm=NONE ctermfg=NONE
+hi Delimiter        cterm=NONE ctermfg=NONE
+hi Exception        cterm=NONE ctermfg=NONE
+hi Float            cterm=NONE ctermfg=NONE
+hi Function         cterm=NONE ctermfg=NONE
+hi Identifier       cterm=NONE ctermfg=NONE
+hi Keyword          cterm=NONE ctermfg=NONE
+hi Label            cterm=NONE ctermfg=NONE
+hi Number           cterm=NONE ctermfg=NONE
+hi Operator         cterm=NONE ctermfg=NONE
+hi Repeat           cterm=NONE ctermfg=NONE
+hi Search           cterm=NONE ctermfg=White ctermbg=DarkRed
+hi Special          cterm=NONE ctermfg=NONE
+hi SpecialChar      cterm=NONE ctermfg=NONE
+hi Statement        cterm=NONE ctermfg=NONE
+hi String           cterm=NONE ctermfg=NONE
+hi Tag              cterm=NONE ctermfg=NONE
+hi Type             cterm=NONE ctermfg=NONE
+
+" C/C++
+hi cCppOut          cterm=NONE ctermfg=DarkBlue
+hi cppAccess        cterm=NONE ctermfg=DarkRed
+hi cSpecial         cterm=NONE ctermfg=NONE
+hi PreProc          cterm=NONE ctermfg=DarkMagenta
+hi StorageClass     cterm=NONE ctermfg=NONE
+hi Structure        cterm=NONE ctermfg=NONE
+hi Typedef          cterm=NONE ctermfg=NONE
+
+hi! link cConstant  NONE
+hi! link cIncluded  PreProc
+hi! link Define     PreProc
+hi! link Include    PreProc
+hi! link Macro      PreProc
+
+hi DiffAdd          cterm=NONE ctermfg=NONE     ctermbg=DarkGreen
+hi DiffChange       cterm=NONE ctermfg=NONE     ctermbg=DarkRed
+hi DiffDelete       cterm=NONE ctermfg=Black    ctermbg=NONE
+hi DiffText         cterm=NONE ctermfg=NONE     ctermbg=DarkRed
+hi LineNr           cterm=NONE ctermfg=Yellow   ctermbg=NONE
+hi ModeMsg          cterm=NONE ctermfg=Yellow   ctermbg=NONE
+hi NonText          cterm=NONE ctermfg=DarkBlue ctermbg=NONE
+hi Pmenu            cterm=NONE ctermfg=White    ctermbg=DarkBlue
+hi PmenuSel         cterm=NONE ctermfg=Black    ctermbg=Yellow
+hi StatusLine       cterm=NONE ctermfg=White    ctermbg=DarkBlue
+hi StatusLineNC     cterm=NONE ctermfg=Black    ctermbg=White
+hi Visual           cterm=NONE ctermfg=Black    ctermbg=Yellow
+hi WildMenu         cterm=NONE ctermfg=Black    ctermbg=Yellow
+
+" HTML syntax coloring is all messed up, so turn it off.
+au! BufNewFile,BufReadPost *.html
+
+" vim:set et sw=2 ts=2:

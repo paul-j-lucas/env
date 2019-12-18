@@ -1,0 +1,6 @@
+autodetach on
+escape ^\\
+hardstatus alwaysignore
+startup_message off
+term xterm-256color
+vbell off

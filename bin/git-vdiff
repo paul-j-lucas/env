@@ -1,0 +1,132 @@
+#! /bin/bash
+##
+#   Script:   git-vdiff -- diff between current and recent copies in git for
+#             Mac OS X
+#   Version:  1.0
+#
+#   Author:   Paul J. Lucas
+##
+
+# Uncomment for shell debugging.
+#set -x
+
+ME=$(basename "$0")
+
+usage() {
+  echo "usage: $ME [-r SHA [-r SHA2]] file" >&2
+  exit $1
+}
+
+##### Parse command-line options
+while getopts r: opt
+do
+  case $opt in
+  r)  if [ -z "$REV_OPT1" ]
+      then REV_OPT1="$OPTARG"
+      elif [ -z "$REV_OPT2" ]
+      then REV_OPT2="$OPTARG"
+      else
+        echo "$ME: at most two -r options may be specified" >&2
+        exit 1
+      fi
+      ;;
+  ?)  usage 1 ;;
+  esac
+done
+shift $(expr $OPTIND - 1)
+[ $# -eq 1 ] || usage 1
+
+FILE="$1"
+[ -f "$FILE" ] || { echo "$ME: $FILE: no such file" >&2; exit 2; }
+
+BASE=$(basename "$FILE")
+
+FILE1=/tmp/_$$_-1-$BASE
+[ "$REV_OPT1" ] || REV_OPT1="HEAD"
+git show "$REV_OPT1:./$FILE" > "$FILE1"
+
+if [ -z "$REV_OPT2" ]
+then
+  FILE2="$PWD/$BASE"
+else
+  FILE2="/tmp/_$$_-2-$BASE"
+  git show "$REV_OPT2:./$BASE" > "$FILE2"
+fi
+
+[ -f "$FILE1" -a -f "$FILE2" ] || exit 2
+
+TERMINAL_XML=/tmp/_$$_.terminal
+cat > $TERMINAL_XML <<EOF
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>BackgroundColor</key>
+  <data>
+  YnBsaXN0MDDUAQIDBAUGFRZYJHZlcnNpb25YJG9iamVjdHNZJGFyY2hpdmVyVCR0b3AS
+  AAGGoKMHCA9VJG51bGzTCQoLDA0OVU5TUkdCXE5TQ29sb3JTcGFjZVYkY2xhc3NGMCAw
+  IDAAEAGAAtIQERITWiRjbGFzc25hbWVYJGNsYXNzZXNXTlNDb2xvcqISFFhOU09iamVj
+  dF8QD05TS2V5ZWRBcmNoaXZlctEXGFRyb290gAEIERojLTI3O0FITltiaWttcn2GjpGa
+  rK+0AAAAAAAAAQEAAAAAAAAAGQAAAAAAAAAAAAAAAAAAALY=
+  </data>
+  <key>CommandString</key>
+  <string>$HOME/bin/vdiff-helper vimdiff "$FILE1" "$FILE2" _$$_</string>
+  <key>CursorBlink</key>
+  <true/>
+  <key>CursorColor</key>
+  <data>
+  YnBsaXN0MDDUAQIDBAUGFRZYJHZlcnNpb25YJG9iamVjdHNZJGFyY2hpdmVyVCR0b3AS
+  AAGGoKMHCA9VJG51bGzTCQoLDA0OVU5TUkdCXE5TQ29sb3JTcGFjZVYkY2xhc3NGMSAx
+  IDAAEAGAAtIQERITWiRjbGFzc25hbWVYJGNsYXNzZXNXTlNDb2xvcqISFFhOU09iamVj
+  dF8QD05TS2V5ZWRBcmNoaXZlctEXGFRyb290gAEIERojLTI3O0FITltiaWttcn2GjpGa
+  rK+0AAAAAAAAAQEAAAAAAAAAGQAAAAAAAAAAAAAAAAAAALY=
+  </data>
+  <key>Font</key>
+  <data>
+  YnBsaXN0MDDUAQIDBAUGGBlYJHZlcnNpb25YJG9iamVjdHNZJGFyY2hpdmVyVCR0b3AS
+  AAGGoKQHCBESVSRudWxs1AkKCwwNDg8QVk5TU2l6ZVhOU2ZGbGFnc1ZOU05hbWVWJGNs
+  YXNzI0AkAAAAAAAAEBCAAoADVk1vbmFjb9ITFBUWWiRjbGFzc25hbWVYJGNsYXNzZXNW
+  TlNGb250ohUXWE5TT2JqZWN0XxAPTlNLZXllZEFyY2hpdmVy0RobVHJvb3SAAQgRGiMt
+  Mjc8QktSW2JpcnR2eH+Ej5ifoqu9wMUAAAAAAAABAQAAAAAAAAAcAAAAAAAAAAAAAAAA
+  AAAAxw==
+  </data>
+  <key>ProfileCurrentVersion</key>
+  <real>2.02</real>
+  <key>RunCommandAsShell</key>
+  <false/>
+  <key>SelectionColor</key>
+  <data>
+  YnBsaXN0MDDUAQIDBAUGFRZYJHZlcnNpb25YJG9iamVjdHNZJGFyY2hpdmVyVCR0b3AS
+  AAGGoKMHCA9VJG51bGzTCQoLDA0OVU5TUkdCXE5TQ29sb3JTcGFjZVYkY2xhc3NGMCAw
+  IDEAEAGAAtIQERITWiRjbGFzc25hbWVYJGNsYXNzZXNXTlNDb2xvcqISFFhOU09iamVj
+  dF8QD05TS2V5ZWRBcmNoaXZlctEXGFRyb290gAEIERojLTI3O0FITltiaWttcn2GjpGa
+  rK+0AAAAAAAAAQEAAAAAAAAAGQAAAAAAAAAAAAAAAAAAALY=
+  </data>
+  <key>ShouldLimitScrollback</key>
+  <integer>1</integer>
+  <key>TextColor</key>
+  <data>
+  YnBsaXN0MDDUAQIDBAUGFRZYJHZlcnNpb25YJG9iamVjdHNZJGFyY2hpdmVyVCR0b3AS
+  AAGGoKMHCA9VJG51bGzTCQoLDA0OVU5TUkdCXE5TQ29sb3JTcGFjZVYkY2xhc3NGMSAx
+  IDEAEAGAAtIQERITWiRjbGFzc25hbWVYJGNsYXNzZXNXTlNDb2xvcqISFFhOU09iamVj
+  dF8QD05TS2V5ZWRBcmNoaXZlctEXGFRyb290gAEIERojLTI3O0FITltiaWttcn2GjpGa
+  rK+0AAAAAAAAAQEAAAAAAAAAGQAAAAAAAAAAAAAAAAAAALY=
+  </data>
+  <key>columnCount</key>
+  <integer>168</integer>
+  <key>name</key>
+  <string>vdiff</string>
+  <key>rowCount</key>
+  <integer>60</integer>
+  <key>shellExitAction</key>
+  <integer>0</integer>
+  <key>type</key>
+  <string>Window Settings</string>
+  <key>warnOnShellCloseAction</key>
+  <integer>0</integer>
+</dict>
+</plist>
+EOF
+open $TERMINAL_XML
+
+# vim:set et sw=2 ts=2:

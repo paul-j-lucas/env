@@ -1,0 +1,13 @@
+#! /bin/sh
+##
+# comout -- comment out lines of code
+#
+# This is meant to be used as a filter for a text editor.  For example, to
+# comment out a block of code using vi, do:
+#
+#   !<motion>comout
+##
+
+exec sed 's!^.*$!#/*&*/!'
+
+# vim:set et sw=2 ts=2:

@@ -1,0 +1,10 @@
+#! /bin/sh
+
+ME=`basename $0`
+[ $# -eq 4 ] || { echo "usage: $ME difftool file1 file2 pattern" >&2; exit 1; }
+
+trap "x=$?; rm -f /tmp/*$4* 2>/dev/null; exit $x" EXIT HUP INT TERM
+
+$1 "$2" "$3"
+
+# vim:set et sw=2 ts=2:

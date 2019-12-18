@@ -1,0 +1,47 @@
+#! /bin/sh
+##
+#   Script:   ulns -- un-symbolic-link files
+#   Version:  1.0
+#
+#   Author:   Paul J. Lucas
+##
+
+# Uncomment for shell debugging.
+#set -x
+
+ME=`basename $0`
+
+usage() {
+  echo "usage: $ME [-s] file ..." >&2
+  exit $1
+}
+
+##### Parse command-line options
+SILENT=false
+while getopts s opt
+do
+  case $opt in
+  s) SILENT=true ;;
+  ?) usage 1 ;;
+  esac
+done
+shift `expr $OPTIND - 1`
+
+[ $# -gt 0 ] || usage 1
+
+trap 'rm -f /tmp/*_$$_; exit 1' EXIT HUP INT TERM
+temp=/tmp/_$$_temp_file
+
+for file in $*
+do
+  if [ -L "$file" ]
+  then
+    cp "$file" "$temp"
+    rm "$file"
+    mv "$temp" "$file"
+  else
+    $SILENT || echo "$ME: \"$file\": not a symbolic link; skipped" >&2
+  fi
+done
+
+# vim:set et sw=2 ts=2:

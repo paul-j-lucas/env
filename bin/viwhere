@@ -1,0 +1,61 @@
+#! /bin/bash
+##
+#   Script:   viwhere -- vi files where pattern is present
+#   Version:  1.6
+#
+#   Author:   Paul J. Lucas
+##
+
+# Uncomment for shell debugging.
+#set -x
+
+ME=$(basename $0)
+
+usage() {
+  cat >&2 <<END
+usage: $ME [-iRsv] find-pattern [file...]
+       $ME [-iIRsv] -r find-pattern file-pattern
+
+-i: Perform case-insensitive find-pattern matching.
+-r: Recurse into subdirectories.
+-R: View files in read-only mode.
+-s: Follow symbolic links.
+-v: Make find-pattern "very magic."
+END
+  exit $1
+}
+
+VERY_MAGIC=false
+
+##### Parse command-line options
+while getopts irRsv opt
+do
+  case $opt in
+  i) INSENSITIVE=-i ;;
+  r) RECURSIVE=-r ;;
+  R) READ_ONLY=-R ;;
+  s) FOLLOW_SYMLINKS=-s ;;
+  v) VERY_MAGIC=true ;;
+  ?) usage 11 ;;
+  esac
+done
+shift $(( $OPTIND - 1 ))
+
+(( "$#" != 0 )) || usage 11
+PATTERN="$1"; shift
+
+###############################################################################
+
+FILES=$(findwhere $INSENSITIVE $FOLLOW_SYMLINKS $RECURSIVE "$PATTERN" "$@")
+[ "$FILES" ] || exit 13
+
+[ "$INSENSITIVE" ] && PATTERN="\\c$PATTERN"
+$VERY_MAGIC && PATTERN="\\v$PATTERN"
+
+VI=$(command -v vim)
+[ "$VI" ] || VI=vi
+
+exec $VI $READ_ONLY +/"$PATTERN" $FILES
+
+###############################################################################
+# vim:set et sw=2 ts=2:

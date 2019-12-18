@@ -1,0 +1,8 @@
+#! /bin/sh
+
+ME=`basename $0`
+[ $# -eq 1 ] || { echo "usage: $ME directory" >&2; exit 1; }
+
+tar cf - "$1" | bzip2 > "$1.tar.bz2"
+
+# vim:set et sw=2 ts=2:

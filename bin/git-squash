@@ -1,0 +1,130 @@
+#! /bin/sh
+##
+#   git-squash -- Squash all the commits on a branch into a single commit.
+#   Version: 2.1
+#
+#   Paul J. Lucas
+##
+
+set -e # stop on error
+
+# uncomment to debug
+#set -x
+
+###############################################################################
+
+ME=`basename $0`
+
+usage() {
+  cat >&2 <<END
+usage: $ME [-dnpr] <branch-name> <main-branch-name>
+
+-d: Perform a dry-run by only printing what would be done.
+-n: Same as -d.
+-p: (Re)publish renamed squashed branch (implies -r).
+-r: Rename new <branch-name>-squashed branch to <branch-name> (replacing it).
+END
+  exit $1
+}
+
+PUBLISH=false
+RENAME=false
+
+while getopts dnpr opt
+do
+  case $opt in
+  d|n)  ECHO=echo ;;
+  p)    PUBLISH=true; RENAME=true ;;
+  r)    RENAME=true ;;
+  ?)    usage 1 ;;
+  esac
+done
+shift `expr $OPTIND - 1`
+[ $# -eq 2 ] || usage 1
+
+BRANCH="$1"
+MAIN="$2"
+SQUASHED="${BRANCH}-squashed"
+
+########## Do it.
+
+$ECHO git checkout "$MAIN"
+$ECHO git branch "$SQUASHED"
+$ECHO git checkout "$SQUASHED"
+
+$ECHO git fetch || {
+  git checkout -f "$BRANCH"
+  git branch -D "$SQUASHED"
+  cat >&2 <<END
+
+The "git fetch" failed (likely due to the remote repository being unavailable).
+Your original branch $BRANCH is unmodified.  You may re-attempt $ME at a later
+time.
+END
+  exit 2
+}
+
+$ECHO git reset --hard "$MAIN"
+
+$ECHO git merge --squash "$BRANCH" || {
+  git checkout -f "$BRANCH"
+  git branch -D "$SQUASHED"
+  cat >&2 <<END
+
+The "git merge" failed (likely due to a merge conflict).  Your original
+branch $BRANCH is unmodified.  You need to "git pull", fix the merge
+conflicts, commit, and push (for safety), all manually.  Then you may
+re-attempt $ME.
+END
+  exit 3
+}
+
+$ECHO git commit
+
+if $RENAME
+then
+  # Failure to delete the possibly nonexistent remote branch is not fatal.
+  $ECHO git push origin --delete "$BRANCH" 2>/dev/null || true
+
+  $ECHO git branch -D "$BRANCH"
+  $ECHO git branch -m "$BRANCH"
+  if $PUBLISH
+  then
+    $ECHO git push -u origin "$BRANCH"
+    if [ -z "$ECHO" ]
+    then
+      echo
+      echo "Per request (-p), your remote brach $BRANCH, if any, was deleted,"
+      echo "your original branch $BRANCH was replaced by the squashed branch,"
+      echo "and the newly squashed branch $BRANCH was (re)published."
+    fi
+  elif [ -z "$ECHO" ]
+  then
+    echo
+    echo "Per request (-r), your remote brach $BRANCH, if any, was deleted,"
+    echo "your original branch $BRANCH was replaced by the squashed branch,"
+    echo "but the newly squashed branch $BRANCH was NOT (re)published (no -p)."
+    echo "To (re)publish manually, do:"
+    echo
+    echo "    git push -u origin $BRANCH"
+  fi
+elif [ -z "$ECHO" ]
+then
+  echo
+  echo "You now have a squashed branch named $SQUASHED."
+  echo "Your original branch $BRANCH is unmodified per request (no -r)."
+  echo
+  echo "You likely want to replace the unmodified $BRANCH branch"
+  echo "by the $SQUASHED branch.  To do that manually, do:"
+  echo
+  echo "    git push origin --delete $BRANCH # only if you pushed the branch"
+  echo "    git branch -D $BRANCH"
+  echo "    git branch -m $BRANCH"
+  echo
+  echo "To (re)publish, do:"
+  echo
+  echo "    git push -u origin $BRANCH"
+fi
+
+###############################################################################
+# vim:set et sw=2 ts=2:

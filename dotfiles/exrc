@@ -1,0 +1,28 @@
+"""""""""" Options
+
+se   autoindent
+se noautowrite
+se noflash
+se noshowmatch
+se   showmode
+se   warn
+se   wrapmargin=0
+se   wrapscan
+se nowriteany
+
+"""""""""" Command-mode settings
+
+map Y y$
+map `a !}wrapc -A41 -F'%'
+map `c !}wrapc -F'%'
+map `C i<code>ea</code>
+map `n :w:n
+map `w !}wrap -F'%'
+
+"""""""""" Input-mode settings
+
+map! `a !}wrapc -A41 -F'%'a
+map! `c !}wrapc -F'%'a
+map! `w !}wrap -F'%'a
+
+" vim:set et sw=2 ts=2:

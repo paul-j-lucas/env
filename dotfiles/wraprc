@@ -1,0 +1,21 @@
+[ALIASES]
+code   = --markdown
+c-like = @code --comment-chars=/*,// --doxygen
+markup = --eos-delimit --para-chars=,:;
+mu     = @markup
+man    = @markup --dot-ignore
+script = @code --comment-chars=\#
+
+[PATTERNS]
+*.[chly]    = c-like
+*.[chly]pp  = c-like
+*.doxy      = c-like
+*.go        = c-like
+*.htm       = markup
+*.html      = markup
+*.java      = c-like
+*.p[ly]     = script
+*.sh        = script
+*.[1-9]     = man
+
+# vim:set et sw=2 ts=2:

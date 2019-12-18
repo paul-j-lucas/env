@@ -1,0 +1,372 @@
+#! /usr/bin/env python
+##
+#   Script:     symlink-packages -- create symbolic links in /usr/local.
+#   Version:    1.2
+#
+#   Copyright (C) 2016  Paul J. Lucas
+#
+#   This program is free software: you can redistribute it and/or modify it
+#   under the terms of the GNU General Public License as published by the Free
+#   Software Foundation, either version 3 of the License, or (at your option)
+#   any later version.
+#
+#   This program is distributed in the hope that it will be useful, but WITHOUT
+#   ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+#   FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+#   more details.
+#
+#   You should have received a copy of the GNU General Public License along
+#   with this program.  If not, see <http://www.gnu.org/licenses/>.
+##
+
+from __future__ import print_function
+
+import argparse
+import errno
+import json
+import os
+import re
+import sys
+
+###############################################################################
+
+ROOT_DIR = '/usr/local'
+PACKAGES_DIR = 'packages'
+
+LOCAL_SUBDIRS = {
+    'bin', 'etc', 'include', 'info', 'lib', 'sbin',
+    'man',
+    'man/man1',
+    'man/man2',
+    'man/man3',
+    'man/man4',
+    'man/man5',
+    'man/man6',
+    'man/man7',
+    'man/man8',
+    'man/man9',
+    'share',
+    'share/man',
+    'share/man/man1',
+    'share/man/man2',
+    'share/man/man3',
+    'share/man/man4',
+    'share/man/man5',
+    'share/man/man6',
+    'share/man/man7',
+    'share/man/man8',
+    'share/man/man9'
+}
+
+ME = os.path.basename( sys.argv[0] )
+
+########## Functions ##########################################################
+
+def assert_isdir( path ):
+    """Asserts that the path is a directory."""
+    if not os.path.isdir( path ):
+        error( "\"%s\": not a directory" % path )
+
+
+def create_symlinks( dir, subdir, dir_dict ):
+    for file_or_dir, contents in dir_dict.iteritems():
+        file_or_dir_path = os.path.join( dir, file_or_dir )
+        if type( contents ) == dict:    # contents is a directory
+            if contents:                # ... that is not empty
+                if file_or_dir_path not in LOCAL_PATHS:
+                    pkg_name = get_single_pkg( contents )
+                    if pkg_name:
+                        # The entire contents of this directory belong to a
+                        # single package: symlink at this level.
+                        src_path = os.path.join(
+                            args.packages_dir, pkg_name, subdir, file_or_dir
+                        )
+                        my_symlink( src_path, file_or_dir_path )
+                        continue
+
+                # mkdir this directory and recurse into it
+                if my_makedirs( file_or_dir_path ):
+                    subsubdir = os.path.join( subdir, file_or_dir )
+                    create_symlinks( file_or_dir_path, subsubdir, contents )
+        else:                           # contents is a file: symlink it
+            src_path = os.path.join(
+                args.packages_dir, contents, subdir, file_or_dir
+            )
+            my_symlink( src_path, file_or_dir_path )
+
+
+def error( *objs ):
+    """Prints an error message to standard error and exits."""
+    print( ME + ":", "error:", *objs, file = sys.stderr )
+    sys.exit( 1 )
+
+
+def get_single_pkg( contents ):
+    """Determines whether the entire contents belong to a single package."""
+    return get_single_pkg_helper( contents, set() )
+
+
+def get_single_pkg_helper( contents, pkg_set ):
+    """Determines whether the entire contents belong to a single package."""
+    for value in contents.values():
+        if type( value ) == dict:
+            return get_single_pkg_helper( value, pkg_set )
+        pkg_set.add( value )
+        if len( pkg_set ) > 1:
+            break
+    return list( pkg_set )[0] if len( pkg_set ) == 1 else False
+
+
+def is_pkg_symlink( path ):
+    """Is path a symlink to a package, e.g., gcc -> gcc-4.9.3?"""
+    if os.path.islink( path ) and os.path.isdir( path ):
+        pkg = os.path.basename( path )
+        pkg_version = os.path.basename( os.readlink( path ) )
+        return re.match( re.escape( pkg ) + '-\d+.*', pkg_version )
+    return False
+
+
+def my_makedirs( path ):
+    if args.dry_run:
+        print( "mkdir -p %s" % path )
+    else:
+        try:
+            os.makedirs( path )
+        except OSError as e:
+            if e.errno != errno.EEXIST:
+                skip( path, e.errno )
+                return False
+    return True
+
+
+def my_symlink( src_path, dest_path ):
+    while os.path.islink( src_path ):
+        # We want to resolve the symbolic link of ONLY src_path and not ALL the
+        # symbolic links in the entire path, hence we can't use realpath().
+        new_src_path = os.readlink( src_path )
+        if not os.path.isabs( new_src_path ):
+            new_src_path = os.path.normpath(
+                os.path.join( os.path.dirname( src_path ), new_src_path )
+            )
+        if new_src_path == src_path:
+            skip( src_path, "symbolic link to itself" )
+            return False
+        src_path = new_src_path
+
+    if args.dry_run:
+        print( "ln -s %s %s" % (src_path, dest_path) )
+    else:
+        try:
+            os.remove( dest_path )
+        except OSError as e:
+            if e.errno != errno.ENOENT:
+                skip( dest_path, e.errno )
+                return False
+        try:
+            os.symlink( src_path, dest_path )
+        except OSError as e:
+            skip( dest_path, e.errno )
+            return False
+    return True
+
+
+def skip( path, error ):
+    if type( error ) == int:
+        error = os.strerror( error )
+    warn( "\"%s\": %s; skipped" % (path, error) )
+
+
+def usage():
+    print(
+'''The packages directory should contain versioned packages with version-less
+symlinks that point to the current version.  The advantages are:
+
+    * Shows which package every file in /usr/local belongs to.
+    * Allows other versions to exist simultaneously for experimentation.
+    * Allows easy upgrades just by changing one symlink.
+    * Allows easy downgrades just by changing one symlink back.
+
+For example, for some package foo-1.1, the initial directory layout would be:
+
+    /usr/local/packages/
+        foo-1.1/
+            src/
+                foo-1.1.tgz
+
+To create that, do:
+
+    $ cd /usr/local/packages
+    $ mkdir -p foo-1.1/src
+    $ cd foo-1.1/src
+    $ wget http://www.foo.com/downloads/foo-1.1.tgz
+
+Then build and install foo with its prefix set to the package's top-level
+versioned directory:
+
+    $ tar xfz foo-1.1.tgz
+    $ cd foo-1.1
+    $ ./configure --prefix=/usr/local/packages/foo-1.1
+    $ make install
+
+Once installed, you can remove the source directory:
+
+    $ cd ..
+    $ rm -r foo-1.1
+
+Finally, symlink the versioned package directory to a version-less symlink:
+
+    $ cd ../..
+    $ ln -s foo-1.1 foo
+
+The final directory layout would be:
+
+    /usr/local/packages/
+        foo -> foo-1.1
+        foo-1.1/
+            bin/
+                foo*
+            include/
+                foo.h
+            lib/
+                libfoo.a
+                libfoo.so -> libfoo.so.1.1
+                libfoo.so.1 -> libfoo.so.1.1
+                libfoo.so.1.1
+            share/
+                man/
+                    man1/
+                        foo.1
+            src/
+                foo-1.1.tar.tgz
+
+Now you can use this script to create symlinks from /usr/local{bin,include,...}
+to all of foo's files via the version-less symlink.  The created symlinks would
+be:
+
+    /usr/local/
+        bin/
+            foo -> /usr/local/packages/foo/bin/foo*
+        include/
+            foo.h -> /usr/local/packages/foo/include/foo.h
+        lib/
+            libfoo.a -> /usr/local/packages/foo/libfoo.a
+            libfoo.so -> /usr/local/packages/foo/libfoo.so.1.1
+            libfoo.so.1 -> /usr/local/packages/foo/libfoo.so.1.1
+            libfoo.so.1.1 -> /usr/local/packages/foo/libfoo.so.1.1
+        share/
+            man/
+                man1/
+                    foo.1 -> /usr/local/packages/foo/share/man/man1/foo.1'''
+    )
+
+
+def visit( pkg_name, dir, dir_dict ):
+    """Creates the data structure that represents all the files."""
+    for dir_entry in os.listdir( dir ):
+        if dir_entry.startswith( '.' ):
+            continue
+        path = os.path.join( dir, dir_entry )
+        contents = dict() if os.path.isdir( path ) else pkg_name
+
+        if dir_entry not in dir_dict:
+            dir_dict[ dir_entry ] = contents
+            dict_entry = dir_dict[ dir_entry ]
+        else:
+            dict_entry = dir_dict[ dir_entry ]
+            if type( dict_entry ) != type( contents ):
+                skip( dir_entry, "file/directory collision" )
+                continue
+            if type( dict_entry ) == str and dict_entry != pkg_name:
+                skip( dir_entry, 
+                    "in more than one package: %s, %s" % (dict_entry, pkg_name)
+                )
+                continue
+            dict_entry[ dir_entry ] = contents
+
+        if type( contents ) == dict:
+            visit( pkg_name, path, dict_entry )
+
+
+def warn( *objs ):
+    """Prints a warning message to standard error."""
+    print( ME + ":", "warning:", *objs, file = sys.stderr )
+
+
+########## Process command line ###############################################
+
+parser = argparse.ArgumentParser(
+    formatter_class=argparse.RawDescriptionHelpFormatter,
+    description="Build symbolic links from /usr/local/{bin,include,lib,...} to packages."
+)
+
+parser.add_argument(
+    "-d", "--dry-run", "-n", action="store_true", default=False, dest="dry_run",
+    help="print what would be done but don't actually do it"
+)
+
+parser.add_argument(
+    "-j", "--json", action="store_true", default=False, dest="json",
+    help="dump data structure as JSON and exit"
+)
+
+parser.add_argument(
+    "-p", "--packages", default=PACKAGES_DIR, dest="packages_dir",
+    metavar="<dir>",
+    help="set packages location directory [default: %s]" % PACKAGES_DIR
+)
+
+parser.add_argument(
+    "-r", "--root", default=ROOT_DIR, dest="root_dir", metavar="<dir>",
+    help="set root directory [default: %s]" % ROOT_DIR
+)
+
+parser.add_argument(
+    "-u", "--usage", action="store_true", default=False, dest="usage",
+    help="give detailed usage and exit"
+)
+
+args = parser.parse_args()
+
+if args.usage:
+    usage()
+    sys.exit( 0 )
+
+assert_isdir( args.root_dir )
+if not os.path.isabs( args.root_dir ):
+    error( "\"%s\": must be an absolute path" % args.root_dir )
+
+if not os.path.isabs( args.packages_dir ):
+    args.packages_dir = os.path.join( args.root_dir, args.packages_dir )
+assert_isdir( args.packages_dir )
+
+if args.json:
+    args.dry_run = True
+
+
+###############################################################################
+
+LOCAL_DICT = { subdir : dict() for subdir in LOCAL_SUBDIRS }
+
+LOCAL_PATHS = \
+    { os.path.join( args.root_dir, subdir ) for subdir in LOCAL_SUBDIRS }
+
+for pkg_dir in os.listdir( args.packages_dir ):
+    pkg_path = os.path.join( args.packages_dir, pkg_dir )
+    if is_pkg_symlink( pkg_path ):
+        for pkg_subdir in os.listdir( pkg_path ):
+            if pkg_subdir in LOCAL_SUBDIRS:
+                pkg_subdir_path = os.path.join( pkg_path, pkg_subdir )
+                if os.path.isdir( pkg_subdir_path ):
+                    visit( pkg_dir, pkg_subdir_path, LOCAL_DICT[ pkg_subdir ] )
+
+if args.json:
+    print(
+        json.dumps(
+            LOCAL_DICT, indent=4, separators=(',',': '), sort_keys=True,
+        )
+    )
+else:
+    create_symlinks( args.root_dir, "", LOCAL_DICT )
+
+###############################################################################
+# vim:set et sw=4 ts=4:

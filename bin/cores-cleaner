@@ -1,0 +1,24 @@
+#! /bin/bash
+
+ME=$(basename $0)
+
+[[ $(uname) == Darwin ]] ||
+  { echo "$ME: this command is supported only on Mac OS X" >&2; exit 1; }
+
+while [ true ]
+do
+  rm -f /cores/*
+
+  rm -f /Library/Application\ Support/CrashReporter/*.plist
+  rm -f ~/Library/Application\ Support/CrashReporter/*.plist
+
+  rm -f /Library/Logs/CrashReporter/*.plist
+  rm -f ~/Library/Logs/CrashReporter/*.plist
+
+  rm -f /Library/Logs/DiagnosticReports/*
+  rm -f ~/Library/Logs/DiagnosticReports/*
+
+  sleep 10
+done
+
+# vim:set et sw=4 ts=2:

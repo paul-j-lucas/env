@@ -1,0 +1,99 @@
+#! /bin/bash
+##
+#   Script:   cgrep -- recursively grep through code
+#   Version:  3.0
+##
+
+# Uncomment for shell debugging.
+#set -x
+
+ME=$(basename $0)
+
+unalias() {
+  local rv=$(alias $1 2>/dev/null | cut -f2 -d"'")
+  echo ${rv:-$1}
+}
+
+usage() {
+  cat >&2 <<END
+usage: $ME [-cCfghilmnpsy] pattern [glob]
+
+-c: Grep through .c files only.
+-C: Grep through .cpp files only.
+-f: Print file name only.
+-g: Grep through .go files only.
+-h: Grep through .h files only.
+-i: Perform case-insensitive matching.
+-l: Grep through .l files only.
+-m: Grep through .md files only.
+-n: Print line numbers.
+-p: Grep through .py files only.
+-s: Follow symbolic links.
+-y: Grep through .y files only.
+
+Default greps through .c, .cpp, .h, .hpp, .l, .lpp, .y, and .ypp files.
+END
+  exit $1
+}
+
+FOLLOW=false
+
+while getopts cCfghilmnpsy opt
+do
+  case $opt in
+  c) FILES1="*.c"   ;;
+  C) FILES1="*.cpp" ;;
+  f) NAME_ONLY=-l   ;;
+  g) FILES1="*.go"  ;;
+  h) FILES1="*.h"   ;;
+  i) INSENSITIVE=-i ;;
+  l) FILES1="*.l"   ;;
+  m) FILES1="*.md"  ;;
+  n) LINE_NUMBER=-n ;;
+  p) FILES1="*.py"  ;;
+  s) FOLLOW=true    ;;
+  y) FILES1="*.y"   ;;
+  ?) usage 1        ;;
+  esac
+done
+shift $(( OPTIND - 1 ))
+(( $# >= 1 && $# <= 2 )) || usage 1
+
+PATTERN=$1
+(( $# == 2 )) && {
+  [[ $FILES1 ]] && {
+    echo "$ME: options and glob are mutually exclusive" >&2
+    exit 1
+  }
+  FILES1=$2
+}
+
+[[ -z $FILES1 && -z $FILES2 ]] && { FILES1="*.[chly]"; FILES2="*.[chly]pp"; }
+
+###############################################################################
+
+# If ripgrep is available, use that.
+if command -v rg >/dev/null 2>/dev/null
+then
+  [[ $LINE_NUMBER ]] || LINE_NUMBER=-N
+  GREP=$(unalias rg)
+  GREP="exec $GREP ${FOLLOW:+-L} $INSENSITIVE $LINE_NUMBER $NAME_ONLY"
+
+  PATTERN=$(echo "$PATTERN" | sed -E 's!\\(<|>)!\\b!g')
+
+  if [[ $FILES2 ]]
+  then $GREP --glob "$FILES1" --glob "$FILES2" "$PATTERN"
+  else $GREP --glob "$FILES1" "$PATTERN"
+  fi
+fi
+
+GREP=$(unalias grep)
+GREP="exec $GREP -E ${FOLLOW:+-S} -I $INSENSITIVE $LINE_NUMBER $NAME_ONLY -r"
+
+if [[ $FILES2 ]]
+then $GREP --exclude-dir '.?*' --include "$FILES1" --include "$FILES2" "$PATTERN"
+elss $GREP --exclude-dir '.?*' --include "$FILES1" "$PATTERN"
+fi
+
+###############################################################################
+# vim:set et sw=2 ts=2:

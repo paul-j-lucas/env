@@ -1,0 +1,30 @@
+#! /usr/bin/perl
+##
+#   Script:   bad-links -- find symbolc links that don't resolve in a directory
+#   Version:  1.0
+#
+#   Author:   Paul J. Lucas
+##
+
+use File::Basename;
+use File::Find;
+use Getopt::Std;
+
+$me = basename( $0 );
+
+sub usage {
+  die "usage: $me [-rs] dir ...\n";
+}
+
+sub wanted {
+  return unless -l && !-e;
+  print "$File::Find::name\n" unless $opt_s;
+  unlink if $opt_r;
+}
+
+getopts( 'rs' ) || usage();
+@ARGV < 1 && usage();
+
+find( \&wanted, @ARGV );
+
+# vim:set et sw=2 ts=2:

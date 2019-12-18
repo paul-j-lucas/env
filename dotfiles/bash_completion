@@ -1,0 +1,34 @@
+##
+# cd completion that completes using directories only in the current directory.
+##
+
+_my_cd()
+{
+  # See http://unix.stackexchange.com/a/244196/44733
+  CDPATH= _cd "$@"
+  [ -z "$COMPREPLY" ] && _cd "$@"
+
+#  if [[ $(type -t _compopt_o_filenames) == "function" ]]
+#  then _compopt_o_filenames
+#  elif [[ $(type -t compopt) == "builtin" ]]
+#  then compopt -o filenames
+#  fi
+#
+#  if [[ $(type -t _filedir) == "function" ]]
+#  then _filedir -d
+#  else compgen -f
+#  fi
+#
+#  local cur=${COMP_WORDS[COMP_CWORD]}
+#  if (( ${#COMPREPLY[@]} == 1 ))
+#  then
+#    local reply=${COMPREPLY[0]}
+#    [[ "$reply" == "$cur" && $reply != "*/" ]] && COMPREPLY[0]="${reply}/"
+#  fi
+#
+#  return 0
+}
+
+complete -F _my_cd -o nospace cd
+
+# vim:set et sw=2 ts=2:

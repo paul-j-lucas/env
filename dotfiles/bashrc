@@ -1,0 +1,298 @@
+##
+#   Bash or Zsh runtime configuration file
+#
+#   Author: Paul J. Lucas
+##
+
+[[ $- == *i* ]] || return               # do .bashrc only if interactive
+[ -t 0 ] || return                      # do .bashrc only if connected to a tty
+
+##### Settings ################################################################
+
+if [ -n "$BASH" ]
+then
+  shopt -s cdable_vars
+  shopt -s histappend
+elif [ -n "$ZSH_NAME" ]
+then
+  setopt    append_history
+  setopt    auto_cd
+  setopt    cdable_vars
+  setopt    hist_expire_dups_first
+  setopt    hist_find_no_dups
+  setopt    hist_ignore_all_dups
+  setopt    hist_ignore_dups
+  setopt    hist_reduce_blanks
+  setopt    hist_save_no_dups
+  setopt    inc_append_history
+  setopt    interactive_comments
+  setopt no_list_beep
+  setopt    rm_star_silent
+  setopt    share_history
+  setopt    sh_word_split
+fi
+
+set -o ignoreeof                        # don't exit shell on ^D
+set -o vi                               # use vi editing on command line
+set +u                                  # ignore unbound variables
+stty echo erase '^?' intr '^C' kill '^X'
+
+##### Functions ###############################################################
+
+##
+# Given an executable name and a path, return the component of the path
+# containing the executable, if any.
+##
+find_path() {
+  local cmd=$1 cmd_path path_comp
+  echo $2 | tr ':' '\012' | while read path_comp
+  do
+    cmd_path="$path_comp/$cmd"
+    [ -x "$cmd_path" ] && { echo "$cmd_path"; break; }
+  done
+}
+
+##
+# Given a string and a max_len, if length > max_len, returns the right-most
+# length - max_len of the string prefixed by "..."; otherwise returns the
+# string as-is.
+##
+str_right() {
+  local str=$1 max_len=$2
+  local len=${#str}
+  if (( $len > $max_len ))
+  then
+    local pos=$(( $len - $max_len + 3 ))
+    str="...$(echo "$str" | cut -c${pos}-)"
+  fi
+  echo "$str"
+}
+
+##### grep alias ##############################################################
+
+# Look for ggrep (GNU grep) first.
+grep=$(find_path ggrep /bin:/usr/bin:/opt/local/bin:/usr/local/bin)
+# Failing that, look for a local grep(1) and assume it's preferred.
+[[ $grep ]] || grep=$(find_path grep /opt/local/bin:/usr/local/bin)
+# Otherwise, default to regular grep(1).
+[[ $grep ]] || grep="grep"
+
+# See if grep supports color.
+if $grep --color=auto foo ~/.bashrc >/dev/null 2>&1
+then
+  grep="$grep --color=auto"
+  GREP_COLOR="41"                       # for older grep
+  GREP_COLORS="bn=32:cx=36:fn=35:ln=33:mt=41;1:se=36"
+  export GREP_COLOR GREP_COLORS
+fi
+[[ $grep == "grep" ]] || alias grep="$grep"
+
+unset grep
+
+##### ls aliases ##############################################################
+
+# Look for GNU ls(1) first since it's more flexible.
+ls=$(find_path gls /opt/local/bin:/usr/local/bin:/usr/bin:/bin)
+# Failing that, look for a local ls(1) and assume it's preferred.
+[[ $ls ]] || ls=$(find_path ls /opt/local/bin:/usr/local/bin)
+# Otherwise, default to regular ls(1).
+[[ $ls ]] || ls="ls"
+
+# Probe the options it accepts.
+$ls -C >/dev/null 2>&1 && ls="$ls -C"
+$ls -F >/dev/null 2>&1 && ls="$ls -F"
+$ls --color >/dev/null 2>&1 && ls="$ls --color"
+$ls --quoting-style=literal >/dev/null 2>&1 && ls="$ls --quoting-style=literal"
+[[ $OS == Darwin ]] && $ls -Ix >/dev/null 2>&1 && ls="$ls -I'Icon'"
+
+ls_nl='
+'
+if $ls -l --time-style='+%b %e  %G$ls_nl%b %e %R' >/dev/null 2>&1
+then ls_time="--time-style='+%b %e  %G$ls_nl%b %e %R'"
+fi
+
+alias lf="$ls"; alias fl=lf
+alias ll="$ls -l $ls_time"
+unset ls
+unset ls_nl
+unset ls_time
+
+##### Prompt ##################################################################
+
+if [ -f ~/bin/set-ps ]
+then
+  PROMPT_COMMAND=". ~/bin/set-ps"
+  export PROMPT_COMMAND
+  if [ -n "$ZSH_NAME" ]
+  then
+    precmd() {
+      eval "$PROMPT_COMMAND"
+    }
+  fi
+fi
+
+##### Convenience aliases #####################################################
+
+alias docker-rm-ac='docker ps --all --quiet | xargs docker rm'
+alias docker-rm-ai='docker images --quiet | xargs docker rmi'
+alias docker-rm-all='docker system prune --all'
+alias fn='find . -name'
+alias ftp='\ftp -i'
+alias gcc-macros='gcc -E -dM -xc /dev/null'
+alias ggrep='cgrep -g'
+alias json='python -mjson.tool'
+alias mgrep='cgrep -m'
+command -v cpus >/dev/null && alias mj="make -j$(( $(cpus) + 1 ))"
+alias pr='\pr -F -o8 -l76 -w80'
+alias psa='ps -A -opid,ppid,ruser,%cpu,command'
+alias psu="ps -u $USER -opid,ppid,%cpu,command"
+alias psag='psu | grep'
+alias psug='psa | grep'
+alias pyc='python -m py_compile'
+alias tm="tmux new-session -As $HOSTNAME"
+command -v vim >/dev/null && alias vi=vim
+
+##### Typo aliases ############################################################
+
+alias and=ant
+alias bsr=bzr
+alias ci=vi
+alias iv=vi
+
+alias car=cat
+alias cta=cat
+
+alias ceho=echo
+alias ceoh=echo
+alias cheo=echo
+alias choe=echo
+alias coeh=echo
+alias cohe=echo
+alias ecoh=echo
+alias ehco=echo
+alias ehoc=echo
+alias eoch=echo
+alias eohc=echo
+alias oceh=echo
+alias oche=echo
+alias oech=echo
+alias oehc=echo
+alias ohce=echo
+alias ohec=echo
+
+alias gerp=grep
+alias rgep=grep
+
+alias ekam=make
+alias keam=make
+alias kaem=make
+alias kame=make
+alias eakm=make
+alias aekm=make
+alias akem=make
+alias akme=make
+alias eamk=make
+alias aemk=make
+alias amek=make
+alias amke=make
+alias ekma=make
+alias kema=make
+alias kmea=make
+alias kmae=make
+alias emka=make
+alias meka=make
+alias mkea=make
+alias mkae=make
+alias emak=make
+alias meak=make
+alias maek=make
+
+alias pdw=pwd
+alias wdp=pwd
+alias wpd=pwd
+
+##### Function aliases ########################################################
+
+alias gdbbt=_gdbbt
+  function _gdbbt {
+    gdb --batch --quiet -ex 'thread apply all bt' -ex quit $*
+  }
+
+alias rsh=_rsh
+  function _rsh {
+    TERM=ansi \rsh $*; mycd .
+  }
+alias ssh=_ssh
+  function _ssh {
+    \ssh $*; mycd .
+  }
+
+##### cd ######################################################################
+
+##
+# Remember the old path so that the proper path will be displayed upon exiting
+# a subshell back into an editor.  "opwd" is intentionally not exported so that
+# each bash will remember its own old path.
+##
+opwd=$PWD; trap "cd '$opwd'" 0
+
+##
+# Display current directory in status line of terminal (if it has one).
+##
+alias cd=mycd
+TERM_STATUS_LINE_WIDTH=35
+case "$TERM" in
+iris-ansi*|sun-cmd|viterm|xterm*)
+  function mycd {
+    if [[ "$*" ]]
+    then \cd "$*" || return
+    else \cd
+    fi
+    dir=$(str_right "$PWD" $TERM_STATUS_LINE_WIDTH)
+    case "$TERM" in
+    iris-ansi*)
+      PSB='\033P1.y'; PSR='\033\\\c' ;;
+    sun-cmd)
+      PSB='\033]l'; PSR='\033\\';;
+    viterm)
+      PSB='\033L|'; PSR='|\c' ;;
+    xterm*)
+      PSB='\033]2;'; PSR='\007' ;;
+    esac
+    echo -en "$PSB$dir$PSR"
+  }
+  ;;  
+screen*)
+  function mycd {
+    if [[ "$*" ]]
+    then \cd "$*" || return
+    else \cd
+    fi
+    dir=$(str_right "$PWD" $TERM_STATUS_LINE_WIDTH)
+    if [[ $TMUX ]]
+    then
+      tmux set-option -gq set-titles-string "$dir"
+    else
+      PSB='\033]2;'; PSR='\007'
+      echo -en "$PSB$dir$PSR"
+    fi
+  }
+  ;;  
+*)
+  function mycd {
+    \cd "$*"
+  }
+  ;;
+esac
+mycd .
+
+##### Local bashrc ############################################################
+
+[ -n "$BASH" -a -f ~/.bashrc-local ] && . ~/.bashrc-local
+[ -n "$ZSH_NAME" -a -f ~/.zshrc-local ] && . ~/.zshrc-local
+
+##### Miscellaneous ###########################################################
+
+unset -f find_path
+
+# vim:set et sw=2 ts=2:

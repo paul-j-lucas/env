@@ -1,0 +1,26 @@
+#! /bin/sh
+##
+#   Script:   overwrite -- overwrite a file more safely
+#   Version:  1.0.1
+#   From:     The Unix Programming Environment, p. 154
+##
+
+ME=`basename $0`
+[ $# -ge 2 ] || { echo "usage: $ME file cmd [args]" >&2; exit 1; }
+
+file=$1; shift
+new=/tmp/overwrite-new_$$_
+old=/tmp/overwrite-old_$$_
+trap 'rm -f /tmp/*_$$_; exit 1' EXIT HUP INT TERM
+
+if "$@" >$new                           # collect input
+then
+  cp $file $old                         # save back-up of original file
+  trap '' HUP INT TERM                  # we're committed: ignore signals
+  cp $new $file
+else
+  echo "$ME: $1 failed; $file unchanged" >&2
+  exit 2
+fi
+
+# vim:set et sw=2 ts=2:

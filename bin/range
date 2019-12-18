@@ -1,0 +1,23 @@
+#! /bin/bash
+
+ME=$(basename $0)
+(( $# == 2 )) || { echo "usage: $ME start end" >&2; exit 1; }
+START=$1
+END=$2
+
+if (( START <= END ))
+then
+  while (( START <= END ))
+  do
+    echo $START
+    START=$(( START + 1 ))
+  done
+else
+  while (( START >= END ))
+  do
+    echo $START
+    START=$(( START - 1 ))
+  done
+fi
+
+# vim:set et sw=2 ts=2:

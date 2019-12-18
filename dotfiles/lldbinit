@@ -1,0 +1,38 @@
+# breakpoints
+command alias bd          breakpoint delete
+command alias bl          breakpoint list
+command alias bs          breakpoint set -f %1 -l %2
+command alias d           breakpoint delete
+command alias db          breakpoint delete
+command alias dis         breakpoint disable
+command alias disable     breakpoint disable
+command alias en          breakpoint enable
+command alias enable      breakpoint enable
+command alias ig          breakpoint modify -i %2 %1
+command alias ignore      breakpoint modify -i %2 %1
+command alias lb          breakpoint list
+command alias sb          breakpoint set -f %1 -l %2
+
+# process
+command alias attach      process attach --pid %1
+command alias attach-name process attach --name %1 --waitfor
+command alias detach      process detach
+
+# running
+command alias al          settings show target.run-args
+command alias args        settings show target.run-args
+command alias as          settings set target.run-args
+command alias la          settings show target.run-args
+command alias sa          settings set target.run-args
+command alias set-args    settings set target.run-args
+command alias until       thread until
+
+# misc
+command alias core        target create -c %1
+command alias denv        settings set target.env-vars %1
+command alias env         settings set target.env-vars %1=%2
+command alias gvars       target variable
+command alias lvars       frame variable --no-args
+command alias pr          register read
+
+# vim:set et sw=2 ts=2:

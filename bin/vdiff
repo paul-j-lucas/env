@@ -1,0 +1,138 @@
+#! /bin/bash
+##
+#   Script:   vdiff -- graphical diff for Mac OS X
+#   Version:  1.1
+#
+#   Author:   Paul J. Lucas
+##
+
+ME=$(basename $0)
+
+[[ $(uname) == Darwin ]] ||
+  { echo "$ME: this command is supported only on Mac OS X" >&2; exit 1; }
+
+check_file() {
+  [ -e "$1" ] || { echo "$ME: \"$1\": file not found" >&2; exit 2; }
+  [ -f "$1" ] || { echo "$ME: \"$1\": not a plain file" >&2; exit 3; }
+}
+
+usage() {
+  echo "usage: $ME file file-or-directory" >&2
+  exit $1
+}
+
+[ $# -eq 2 ] || usage 1
+FILE1=$1
+FILE2=$2
+
+[ "${FILE1#/}" = "$FILE1" ] && FILE1="$PWD/$FILE1"
+[ "${FILE2#/}" = "$FILE2" ] && FILE2="$PWD/$FILE2"
+
+check_file "$FILE1"
+[ -d "$FILE2" ] && {
+  BASE1=$(basename "$FILE1")
+  FILE2="$FILE2/$BASE1"
+}
+check_file "$FILE2"
+
+TERMINAL_XML=/tmp/_$$_.term
+cat > $TERMINAL_XML <<EOF
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>WindowSettings</key>
+  <array>
+    <dict>
+      <key>AutoFocus</key>
+      <string>YES</string>
+      <key>Autowrap</key>
+      <string>YES</string>
+      <key>Backwrap</key>
+      <string>YES</string>
+      <key>Bell</key>
+      <string>YES</string>
+      <key>BlinkCursor</key>
+      <string>YES</string>
+      <key>CleanCommands</key>
+      <string>vi;vim;vimdiff</string>
+      <key>Columns</key>
+      <string>168</string>
+      <key>CursorShape</key>
+      <string>0</string>
+      <key>CustomTitle</key>
+      <string>diff</string>
+      <key>DeleteKeySendsBackspace</key>
+      <string>NO</string>
+      <key>DisableAnsiColors</key>
+      <string>NO</string>
+      <key>DoubleBold</key>
+      <string>YES</string>
+      <key>DoubleColumnsForDoubleWide</key>
+      <string>NO</string>
+      <key>DoubleWideChars</key>
+      <string>YES</string>
+      <key>ExecutionString</key>
+      <string>$HOME/bin/vdiff-helper vimdiff "$FILE1" "$FILE2" _$$_</string>
+      <key>FontAntialiasing</key>
+      <string>NO</string>
+      <key>FontHeightSpacing</key>
+      <string>1</string>
+      <key>FontWidthSpacing</key>
+      <string>1.018519</string>
+      <key>IsMiniaturized</key>
+      <string>NO</string>
+      <key>MacTermFunctionKeys</key>
+      <string>NO</string>
+      <key>Meta</key>
+      <string>-1</string>
+      <key>NSFixedPitchFont</key>
+      <string>Monaco</string>
+      <key>NSFixedPitchFontSize</key>
+      <real>10</real>
+      <key>Rows</key>
+      <string>40</string>
+      <key>SaveLines</key>
+      <string>10000</string>
+      <key>ScrollRegionCompat</key>
+      <string>NO</string>
+      <key>ScrollRows</key>
+      <string>0</string>
+      <key>Scrollback</key>
+      <string>YES</string>
+      <key>Shell</key>
+      <string></string>
+      <key>ShellExitAction</key>
+      <string>2</string>
+      <key>StrictEmulation</key>
+      <string>YES</string>
+      <key>StringEncoding</key>
+      <string>5</string>
+      <key>TerminalOpaqueness</key>
+      <real>0.89</real>
+      <key>TextColors</key>
+      <string>1.000 1.000 1.000 0.000 0.000 0.000 0.000 1.000 0.000 0.000 1.000 0.000 0.000 0.000 0.000 1.000 1.000 1.000 0.000 0.000 1.000 1.000 1.000 0.000 </string>
+      <key>TitleBits</key>
+      <string>44</string>
+      <key>Translate</key>
+      <string>YES</string>
+      <key>UseCtrlVEscapes</key>
+      <string>NO</string>
+      <key>VisualBell</key>
+      <string>NO</string>
+      <key>WinLocULY</key>
+      <string>664</string>
+      <key>WinLocX</key>
+      <string>107</string>
+      <key>WinLocY</key>
+      <string>0</string>
+      <key>WindowCloseAction</key>
+      <string>1</string>
+    </dict>
+  </array>
+</dict>
+</plist>
+EOF
+open $TERMINAL_XML
+
+# vim:set et sw=2 ts=2:

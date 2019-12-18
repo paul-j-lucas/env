@@ -1,0 +1,156 @@
+#! /bin/bash
+##
+#   .profile -- Bourne or Bash start-up file
+#
+#   Author: Paul J. Lucas
+##
+
+# Set a minimal path so basic Unix commands work.
+PATH=/bin:/usr/bin
+export PATH
+
+OS=`uname`
+export OS
+
+########## Set various path variables #########################################
+
+##
+# Given a colon-separated path, return a new path containing only those
+# components that actually exist.
+##
+test_path() {
+  echo $1 | tr ':' '\012' | while read local_path
+  do [ -d "$local_path" ] && echo $local_path
+  done | { tr '\012' ':'; echo; } | sed 's/:$//'
+}
+
+CDPATH0=.:..:../..:../../..:../../../..:../../../../..:~/src
+CDPATH=$CDPATH0:~
+export CDPATH0 CDPATH
+
+_path=/usr/share/info:\
+/opt/local/share/info:\
+/usr/local/share/info
+INFOPATH=`test_path $_path`
+export INFOPATH
+
+_path=~/local/lib
+_path=`test_path $_path`
+if [ -n "$_path" ]
+then
+  if [ $OS = Darwin ]
+  then DYLD_LIBRARY_PATH=$_path; export DYLD_LIBRARY_PATH
+  else LD_LIBRARY_PATH=$_path; export LD_LIBRARY_PATH
+  fi
+fi
+
+_path=~/local/share/man:\
+/usr/share/man:\
+/Applications/Xcode.app/Contents/Developer/usr/share/man:\
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/share/man:\
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/share/man:\
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/share/man:\
+/usr/X11/share/man:\
+/opt/local/share/man:\
+/usr/local/share/man
+MANPATH=`test_path $_path`
+export MANPATH
+
+_path=/usr/lib64/distcc/bin:\
+~/local/bin:\
+/bin:/usr/bin:/sbin:/usr/sbin:\
+/usr/sfw/bin:/usr/ccs/bin:\
+/opt/local/bin:/opt/local/sbin:\
+/usr/X11/bin:\
+/usr/local/bin:/usr/local/sbin:\
+~/bin
+PATH0=`test_path $_path`
+PATH=$PATH0:.
+export PATH0
+
+unset -f test_path
+
+########## Set other variables ################################################
+
+ANT_OPTS="-Xmx256m -Dincludeantruntime=false"
+export ANT_OPTS
+
+CLASSPATH=.
+CLICOLOR=true                           # Make ls(1) use color output
+export CLASSPATH CLICOLOR
+
+DISPLAY=:0.0
+export DISPLAY
+
+EDITOR=`command -v vim`
+[ -z "$EDITOR" ] && EDITOR=vi
+export EDITOR
+
+CDECL_COLORS="caret=32;1:error=31;1:HELP-keyword=1:HELP-nonterm=36:HELP-punct=33;1:HELP-title=34;1:locus=1:PROMPT=32:warning=33;1"
+export CDECL_COLORS
+
+GCC_COLORS="error=31;1:warning=33;1:note=36:caret=32;1:locus=01:quote=01"
+export GCC_COLORS
+
+if [ -n "$BASH" ]
+then HISTFILE=~/.bash_history
+elif [ -n "$ZSH_NAME" ]
+then HISTFILE=~/.zsh_history
+fi
+HISTFILESIZE=10000
+HISTIGNORE="exit:lf:ll:ls:pwd"
+HISTSIZE=$HISTFILESIZE
+SAVEHIST=$HISTSIZE
+HOSTNAME=`uname -n | sed 's/\..*//' | tr '[A-Z]' '[a-z]'`
+export HISTFILE HISTFILESIZE HISTIGNORE HISTSIZE HOSTNAME SAVEHIST
+
+case $OS in
+Darwin)
+  if [ -d /usr/libexec/java_home ]
+  then
+    JAVA_HOME=`/usr/libexec/java_home`
+    JDK_HOME=$JAVA_HOME
+    export JAVA_HOME JDK_HOME
+  fi
+  ;;
+esac
+
+LC_COLLATE=C                            # makes 'ls' sort ABab not aAbB
+LSCOLORS=gxexfxfxcxfxfxcbcbgbgb
+export LC_COLLATE LSCOLORS
+
+LESS=-dFiRX
+LESS_TERMCAP_md="`tput bold``tput setaf 3`"
+LESS_TERMCAP_me=`tput sgr0`             # mode end
+LESS_TERMCAP_us=`tput smul`             # underline start
+LESS_TERMCAP_ue=`tput rmul`             # underline end
+export LESS LESS_TERMCAP_md LESS_TERMCAP_me LESS_TERMCAP_us LESS_TERMCAP_ue
+
+PAGER=less
+PYTHONSTARTUP=~/.pystartup
+export PAGER PYTHONSTARTUP
+
+########## Source other files #################################################
+
+if [ $OS = Darwin ]
+then dircolors=~/Library/dircolors/dircolors.sh
+else dircolors=~/lib/dircolors/dircolors.sh
+fi
+[ -f "$dircolors" ] && . $dircolors
+unset dircolors
+
+if [ -n "$BASH" ]
+then
+  [ -f ~/.profile-local ] && . ~/.profile-local
+  [ -f ~/.bashrc ] && . ~/.bashrc
+elif [ -n "$ZSH_NAME" ]
+then
+  [ -f ~/.zprofile-local ] && . ~/.zprofile-local
+fi
+
+########## Miscellaneous ######################################################
+
+ulimit -c unlimited
+#ulimit -n 10000
+
+# vim:set et sw=2 ts=2:

@@ -1,0 +1,26 @@
+[user]
+name = Paul J. Lucas
+
+[push]
+default = simple
+
+[alias]
+bn = rev-parse --abbrev-ref HEAD
+branch-name = rev-parse --abbrev-ref HEAD
+co = checkout
+comit = commit
+commti = commit
+comti = commit
+last-tag = describe --tags --abbrev=0
+pick = cherry-pick --edit --no-commit -x
+psuh = push
+pub = push -u origin
+publish = push -u origin
+rename = branch -m
+sha = rev-parse HEAD
+stat = status
+unpub = push origin --delete
+unpublish = push origin --delete
+
+[include]
+path = ~/.gitconfig-local

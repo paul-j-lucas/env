@@ -1,0 +1,23 @@
+set print static-members off
+set print thread-events off
+
+# breakpoints
+alias -a bd = delete
+alias -a db = delete
+alias -a bl = info break
+alias -a lb = info break
+alias -a bs = break
+alias -a sb = break
+
+# stack
+alias -a w = bt
+
+define rmain
+  tbreak main
+  r
+end
+document rmain
+Run program and break on first executable line in main().
+end
+
+# vim:set et sw=2 ts=2:

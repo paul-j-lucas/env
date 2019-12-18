@@ -1,0 +1,21 @@
+set bind-tty-special-chars off
+set completion-query-items 500
+set editing-mode vi
+set expand-tilde off
+set mark-directories off
+set mark-symlinked-directories off
+set match-hidden-files off
+set page-completions off
+set show-all-if-ambiguous on
+set skip-completed-text on
+set visible-stats on
+
+set keymap vi-insert
+"\C-a": beginning-of-line
+"\C-e": end-of-line
+"\C-k": kill-whole-line
+"\C-w": backward-kill-word
+"\C-x\C-r": re-read-init-file
+TAB: complete
+
+# vim:set et sw=2 ts=2:

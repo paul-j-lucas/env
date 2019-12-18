@@ -1,0 +1,36 @@
+#! /bin/sh
+##
+#   Script:   mcp -- multiple cp
+#   Version:  1.0
+#
+#   Author:   Paul J. Lucas
+##
+
+ME=`basename $0`
+
+usage() {
+  cat >&2 <<END
+usage: $ME [-dn] partial-file-name1 partial-file-name2
+
+-d,-n: Do a dry-run, take no action.
+END
+  exit $1
+}
+
+##### Parse command-line options
+while getopts dn opt
+do
+  case $opt in
+  d|n)  ECHO=echo ;;
+  esac
+done
+shift `expr $OPTIND - 1`
+[ $# -eq 2 ] || usage 1
+
+ls -d *"$1"* | while read file
+do
+  file2=`echo $file | sed "s/$1/$2/g"`
+  $ECHO cp "$file" "$file2"
+done
+
+# vim:set et sw=2 ts=2:

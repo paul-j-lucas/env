@@ -1,0 +1,16 @@
+#! /bin/bash
+
+ME=$(basename $0)
+
+[[ $(uname) == Darwin ]] ||
+  { echo "$ME: this command is supported only on Mac OS X" >&2; exit 1; }
+
+(( $(id -u) == 0 )) ||
+  { echo "$ME: effective user ID of root required" >&2; exit 2; }
+
+# Since we're running as root, use only the explicit full path.
+PORT=/opt/local/bin/port
+
+$PORT selfupdate && $PORT upgrade -c -u outdated
+
+# vim:set et sw=2 ts=2:

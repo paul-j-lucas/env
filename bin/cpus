@@ -1,0 +1,31 @@
+# /bin/sh
+##
+#   Script:   cpus -- print the number of CPUs on the system.
+#   Version:  1.1
+#
+#   Author:   Paul J. Lucas
+##
+
+ME=`basename $0`
+OS=`uname`
+
+case $OS in
+AIX)
+  echo `lsdev -Cc processor | wc -l`    # echo gets rid of extra whitespace
+  ;;
+Darwin|*BSD)
+  sysctl -n hw.ncpu
+  ;;
+Linux)
+  grep '^processor' /proc/cpuinfo | wc -l
+  ;;
+SunOS)
+  psrinfo | wc -l
+  ;;
+*)
+  echo "$ME: don't know how to determine the number of CPUs for $OS" >&2
+  exit 1
+  ;;
+esac
+
+# vim:set et sw=2 ts=2:

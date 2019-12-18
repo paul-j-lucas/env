@@ -1,0 +1,71 @@
+#! /bin/sh
+##
+#   Script:   vicdecl -- vi files where a C++ define/enum/struct/class/typedef
+#             is declared.
+#   Version:  1.3
+#
+#   Author:   Paul J. Lucas
+##
+
+# Uncomment for shell debugging.
+#set -x
+
+ME=`basename $0`
+
+usage() {
+  cat >&2 <<END
+usage: $ME [-fis] name [file...]
+       $ME [-fis] -r name [file-pattern]
+
+-f: Look for function declaration instead of define, enum, class, namespace,
+    struct, or typedef declaration.
+-i: Perform case-insensitive name matching.
+-r: Recurse into subdirectories.
+-s: Follow symbolic links.
+END
+  exit $1
+}
+
+FIND_FUNCTION=false
+
+##### Parse command-line options
+while getopts firs opt
+do
+  case $opt in
+  f) FIND_FUNCTION=true ;;
+  i) FIND_INSENSITIVE=-i ;;
+  r) RECURSIVE=-r ;;
+  s) FOLLOW_SYMLINKS=-s ;;
+  ?) usage 21 ;;
+  esac
+done
+shift `expr $OPTIND - 1`
+
+[ $# -gt 0 ] || usage 21
+NAME=$1; shift
+
+if $FIND_FUNCTION
+then
+  # Function patterns are a special case because there can be many false
+  # positives.
+  PATTERN="[A-Za-z_][ 	A-Za-z_0-9&*,:<>]*[ 	]$NAME[ 	]*\("
+else
+  CLASS_PATTERN="(class|struct)[ 	]+([A-Za-z_()]+[ 	]+)?$NAME([ 	/:<{]|$)"
+  DEFINE_PATTERN="#[ 	]*define[ 	]+$NAME[ 	(]"
+  ENUM_PATTERN="(enum|namespace)[ 	]+$NAME([ 	/{]|$)"
+  TYPEDEF_PATTERN="typedef[ 	]+[A-Za-z_][ 	A-Za-z_0-9&*,:<>]*[ 	]$NAME[ 	]*(\[[^]]*\])*;"
+  PATTERN="$CLASS_PATTERN|$DEFINE_PATTERN|$ENUM_PATTERN|$TYPEDEF_PATTERN"
+fi
+
+if [ "$1" ]
+then FILES="$*"
+else FILES="*.h"
+fi
+
+VIWHERE="exec viwhere -v $FIND_INSENSITIVE $FOLLOW_SYMLINKS $RECURSIVE"
+if [ "$RECURSIVE" ]
+then $VIWHERE "$PATTERN" "$FILES"
+else $VIWHERE "$PATTERN" $FILES
+fi
+
+# vim:set et sw=2 ts=2:

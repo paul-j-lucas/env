@@ -1,0 +1,74 @@
+#! /bin/bash
+##
+#   Script:   findwhere -- find files where pattern is present
+#   Version:  3.0
+#
+#   Author:   Paul J. Lucas
+##
+
+# Uncomment for shell debugging.
+#set -x
+
+ME=$(basename $0)
+
+unalias() {
+  local rv=$(alias $1 2>/dev/null | cut -f2 -d"'")
+  echo ${rv:-$1}
+}
+
+usage() {
+  cat >&2 <<END
+usage: $ME [-is] find-pattern [file...]
+       $ME [-iIs] -r find-pattern file-pattern
+
+-i: Perform case-insensitive find-pattern matching.
+-r: Recurse into subdirectories.
+-s: Follow symbolic links.
+END
+  exit $1
+}
+
+FOLLOW=false
+RECURSIVE=false
+
+##### Parse command-line options
+while getopts irs opt
+do
+  case $opt in
+  i) INSENSITIVE=-i ;;
+  r) RECURSIVE=true ;;
+  s) FOLLOW=true ;;
+  ?) usage 1 ;;
+  esac
+done
+shift $(( $OPTIND - 1 ))
+
+(( $# > 0 )) || usage 1
+PATTERN=$1
+
+###############################################################################
+
+# If recursive and ripgrep is available, use that.
+if $RECURSIVE && command -v rg >/dev/null 2>/dev/null
+then
+  GREP=$(unalias rg)
+  GREP="exec $GREP ${FOLLOW:+-L} $INSENSITIVE -l"
+
+  (( $# >= 2 )) || { echo $ME: -r requires file-pattern >&2; exit 2; }
+  $GREP --glob '!.?*' --glob "$2" "$PATTERN"
+fi
+
+GREP=$(unalias grep)
+GREP="exec $GREP -E ${FOLLOW:+-S} -I $INSENSITIVE -l"
+
+if $RECURSIVE
+then
+  (( $# >= 2 )) || { echo $ME: -r requires file-pattern >&2; exit 2; }
+  $GREP --exclude-dir '.?*' --include "$2" --recursive "$PATTERN" .
+else
+  shift
+  $GREP "$PATTERN" $*
+fi
+
+###############################################################################
+# vim:set et sw=2 ts=2:

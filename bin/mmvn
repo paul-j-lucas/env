@@ -1,0 +1,59 @@
+#! /bin/bash
+##
+#   Script:   mmvn -- multiple move (rename) files to prefix-#
+#   Version:  1.1
+#
+#   Author:   Paul J. Lucas
+##
+
+ME=$(basename $0)
+
+error() {
+  echo "$ME: $*"
+  exit 65
+}
+
+usage() {
+  cat >&2 <<END
+usage: $ME [-d] [-n START] prefix files...
+
+-d: Do a dry-run, take no action.
+-n: Specify starting number.
+END
+  exit 64
+}
+
+NUM_RE='^[0-9]+$'
+n=0
+
+##### Parse command-line options
+while getopts dn: opt
+do
+  case $opt in
+  d)  ECHO=echo ;;
+  n)  n=$OPTARG
+      [[ $n =~ $NUM_RE ]] || error "$n: must be a number"
+      (( $n >= 1 )) || error "$n: must be a number >= 1"
+      ;;
+  esac
+done
+shift $(( OPTIND - 1 ))
+(( $# >= 2 )) || usage
+PREFIX=$1; shift
+
+for file in $*
+do
+  ext=${file##*.}
+  if [[ $ext != $file ]]
+  then ext=".$ext"
+  else unset ext
+  fi
+  dest="$PREFIX-$n$ext"
+  while [ -e "$dest" ]
+  do n=$(( n + 1 ))
+  done
+  $ECHO mv "$file" "$dest"
+  n=$(( n + 1 ))
+done
+
+# vim:set et sw=2 ts=2:

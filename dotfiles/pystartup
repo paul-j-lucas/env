@@ -1,0 +1,6 @@
+try:
+    import readline
+except ImportError:
+    pass
+
+# vim:set et sw=4 ts=4:

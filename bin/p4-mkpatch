@@ -1,0 +1,20 @@
+#! /bin/sh
+##
+# p4-mkpatch -- make a patch file from a file in Perforce to the current one
+# Paul J. Lucas
+##
+
+ME=`basename $0`
+[ $# -eq 1 ] || { echo "usage: $ME file" >&2; exit 1; }
+
+CUR_FILE="$1"
+OLD_FILE="/tmp/$ME_$$_-$CUR_FILE"
+PATCH_FILE="$CUR_FILE.patch"
+
+trap "x=$?; rm -f /tmp/*_$$_* 2>/dev/null; exit $x" EXIT HUP INT TERM
+p4 print -q "$CUR_FILE" > $OLD_FILE
+
+[ -f "$CUR_FILE" -a -f "$OLD_FILE" ] || exit 1
+diff -u "$OLD_FILE" "$CUR_FILE" > "$PATCH_FILE"
+
+# vim:set et sw=2 ts=2:

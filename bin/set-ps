@@ -1,0 +1,51 @@
+#! /bin/bash
+##
+#   set-ps: Sets the shell prompt strings
+#
+#   This script MUST be dot executed.
+#
+#   For example, in your ~/.bashrc file, you could have:
+#
+#       [ -f ~/bin/set-ps ] && PROMPT_COMMAND=". ~/bin/set-ps"
+#
+#   If $PSPREFIX is set, prefixes the shell prompt strings with it.
+#   If within a git repository tree, includes the branch name in the prompt.
+#
+#   If $HOSTNAME is set, includes that in the prompts.
+##
+
+###############################################################################
+
+root=false
+if [[ $EUID ]]
+then (( EUID     == 0 )) && root=true
+else (( $(id -u) == 0 )) && root=true
+fi
+
+if $root
+then pschar='#'
+else pschar='$'
+fi
+
+git_branch=$(git rev-parse --abbrev-ref HEAD 2>/dev/null)
+
+if [[ $PSPREFIX || $git_branch ]]
+then
+  [[ $PSPREFIX ]] && psprefix="$PSPREFIX "
+  [[ $git_branch ]] && psprefix="${psprefix}git_branch:$git_branch "
+  psprefix=$'\e[7m'" ${psprefix}"$'\e[0m'$'\n'
+fi
+
+level=$((SHLVL - 1))
+PS1="$psprefix$HOSTNAME<$level>$pschar "
+PS2="$psprefix$HOSTNAME<$level>+ "
+PS3="$psprefix$HOSTNAME<$level>? "
+
+unset git_branch
+unset level
+unset pschar
+unset psprefix
+unset root
+
+###############################################################################
+# vim:set et sw=2 ts=2:

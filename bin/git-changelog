@@ -1,0 +1,60 @@
+#! /usr/bin/perl
+##
+#   Script:   git-changelog -- create a GNU-style ChangeLog from git
+#   Version:  1.1
+#
+#   Author:   Paul J. Lucas
+##
+
+use File::Basename;
+use Text::Wrap;
+
+$GIT_OPTIONS = "--date=short --name-status --pretty=format:'%ad|%aN|%aE|%s'";
+$Text::Wrap::columns = 80;
+
+$EMAIL_FROM = 'plucas@.*splunk.com';
+$EMAIL_TO   = 'paul@lucasmail.org';
+
+###############################################################################
+
+$ME = basename( $0 );
+@files = ();
+
+open( GIT_LOG, "git log $GIT_OPTIONS |" ) or die "$ME: git failed: $!\n";
+while ( <GIT_LOG> ) {
+  chop();
+
+  /^\d{4}/ && do {
+    if ( @files ) {
+      unless ( $message =~ m!(?:Intermediate|Cosmetic|tweak)! ) {
+        if ( $date ne $prev_date ) {
+          print "$date_nl$date  $author <$email>\n\n";
+          $prev_date = $date;
+          $date_nl = "\n";
+        }
+        my $change = join( ", ", @files ) . ": $message";
+        print wrap( "   * ", "     ", $change ), "\n";
+      }
+      @files = ();
+    }
+    ( $date, $author, $email, $message ) = split( /\|/ );
+    $email = $EMAIL_TO if $email =~ $EMAIL_FROM;
+  };
+
+  /^[AM]\s+([^\s].*)$/ && do {
+    my $file = $1;
+    my $base = basename( $file );
+    next if $base =~ m!^(?:ChangeLog|.git\w+|README.md)$!;
+    unless ( $base =~ m!^(?:Makefile\.\w+)$! ) {
+      $file =~ s!^man/man([1-9])/(\w+\.\g1)!$2!;
+      $file =~ s!^(?:bin|lib|m4|src)/(.+)$!$1!;
+      $file =~ s!^test(?:/\w+)?/(.+)!$1!;
+    }
+    push( @files, $file );
+  };
+
+} # while
+close( GIT_LOG );
+
+###############################################################################
+# vim:set et sw=2 ts=2:
