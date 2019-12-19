@@ -17,6 +17,7 @@ elif [ -n "$ZSH_NAME" ]
 then
   setopt    append_history
   setopt    auto_cd
+  setopt no_auto_param_slash
   setopt    cdable_vars
   setopt    hist_expire_dups_first
   setopt    hist_find_no_dups
@@ -27,6 +28,7 @@ then
   setopt    inc_append_history
   setopt    interactive_comments
   setopt no_list_beep
+  setopt no_list_types
   setopt    rm_star_silent
   setopt    share_history
   setopt    sh_word_split
