@@ -32,6 +32,7 @@ then
   setopt    rm_star_silent
   setopt    share_history
   setopt    sh_word_split
+  zle_highlight+=(paste:none)           # disable paste highlighting
 fi
 
 set -o ignoreeof                        # don't exit shell on ^D
