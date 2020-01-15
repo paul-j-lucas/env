@@ -32,6 +32,20 @@ then
   setopt    rm_star_silent
   setopt    share_history
   setopt    sh_word_split
+
+  ##
+  # Make zsh have the same behavior as bash/ksh93: typing _ (in vi command
+  # mode) inserts a space (if needed) followed by the last word of the previous
+  # command.
+  ##
+  insert-space-last-word() {
+    zle .vi-add-next                    # Enter insert mode after current pos.
+    zle .magic-space                    # Insert space if necessary.
+    zle .insert-last-word
+  }
+  zle -N insert-space-last-word
+  bindkey -M vicmd _ insert-space-last-word
+
   zle_highlight+=(paste:none)           # disable paste highlighting
 fi
 
