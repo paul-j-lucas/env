@@ -4,9 +4,19 @@
 #
 #   This script MUST be dot executed.
 #
-#   For example, in your ~/.bashrc file, you could have:
+#   For example, a use that works in either your ~/.bashrc or .zshrc file is:
 #
-#       [ -f ~/bin/set-ps ] && PROMPT_COMMAND=". ~/bin/set-ps"
+#       if [ -f ~/bin/set-ps ]
+#       then
+#         PROMPT_COMMAND=". ~/bin/set-ps"
+#         export PROMPT_COMMAND
+#         if [ -n "$ZSH_NAME" ]
+#         then
+#           precmd() {
+#             eval "$PROMPT_COMMAND"
+#           }
+#         fi
+#       fi
 #
 #   If $PSPREFIX is set, prefixes the shell prompt strings with it.
 #   If within a git repository tree, includes the branch name in the prompt.
