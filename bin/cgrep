@@ -88,12 +88,52 @@ then
 fi
 
 GREP=$(unalias grep)
-GREP="exec $GREP -E ${FOLLOW:+-S} -I $INSENSITIVE $LINE_NUMBER $NAME_ONLY -r"
-
-if [[ $FILES2 ]]
-then $GREP --exclude-dir '.?*' --include "$FILES1" --include "$FILES2" "$PATTERN"
-elss $GREP --exclude-dir '.?*' --include "$FILES1" "$PATTERN"
+# See if grep accepts the -E (extended regexp) option.
+if echo x | $GREP -E x >/dev/null 2>&1
+then GREP="$GREP -E"
+else GREP=$(unalias egrep)
 fi
+
+GREP="exec $GREP"
+
+# See if grep accepts the -i (ignore case) option.
+if [[ $INSENSITIVE ]]
+then echo x | $GREP $INSENSITIVE x >/dev/null 2>&1 && GREP="$GREP $INSENSITIVE"
+fi
+
+# See if grep accepts the -I (ignore binary files) option.
+echo x | $GREP -I x >/dev/null 2>&1 && GREP="$GREP -I"
+
+# See if grep accepts the -n (line number) option.
+if [[ $LINE_NUMBER ]]
+then echo x | $GREP $LINE_NUMBER x >/dev/null 2>&1 && GREP="$GREP $LINE_NUMBER"
+fi
+
+# See if grep accepts the -N (name only) option.
+if [[ $NAME_ONLY ]]
+then echo x | $GREP $NAME_ONLY x >/dev/null 2>&1 && GREP="$GREP $NAME_ONLY"
+fi
+
+# See if grep accepts the -S (follow symlinks) option.
+if $FOLLOW
+then echo x | $GREP -S x >/dev/null 2>&1 && GREP="$GREP -S"
+fi
+
+# See if grep accepts the --include and -r (recursive) options.
+if echo x | $GREP --include x -r x >/dev/null 2>&1
+then
+  GREP="$GREP -r"
+  if [[ $FILES2 ]]
+  then $GREP --include "$FILES1" --include "$FILES2" "$PATTERN" .
+  else $GREP --include "$FILES1" "$PATTERN" .
+  fi
+else
+  if [[ $FILES2 ]]
+  then find . -name "$FILES1" -o -name "$FILES2"
+  else find . -name "$FILES1"
+  fi | xargs grep "$PATTERN"
+fi
+
 
 ###############################################################################
 # vim:set et sw=2 ts=2:
