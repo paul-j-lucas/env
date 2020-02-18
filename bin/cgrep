@@ -9,11 +9,32 @@
 
 ME=$(basename $0)
 
+##### Functions ###############################################################
+
+##
+# Given an executable name and a path, return the component of the path
+# containing the executable, if any.
+##
+find_path() {
+  local cmd=$1 cmd_path path_comp
+  echo $2 | tr ':' '\012' | while read path_comp
+  do
+    cmd_path="$path_comp/$cmd"
+    [ -x "$cmd_path" ] && { echo "$cmd_path"; break; }
+  done
+}
+
+##
+# Given a command, unalias it (if aliased).
+##
 unalias() {
   local rv=$(alias $1 2>/dev/null | cut -f2 -d"'")
   echo ${rv:-$1}
 }
 
+##
+# Print the usage message and exit.
+##
 usage() {
   cat >&2 <<END
 usage: $ME [-cCfghilmnpsy] pattern [glob]
@@ -35,6 +56,8 @@ Default greps through .c, .cpp, .h, .hpp, .l, .lpp, .y, and .ypp files.
 END
   exit $1
 }
+
+##### Main ####################################################################
 
 FOLLOW=false
 
@@ -87,14 +110,15 @@ then
   fi
 fi
 
-GREP=$(unalias grep)
-# See if grep accepts the -E (extended regexp) option.
-if echo x | $GREP -E x >/dev/null 2>&1
-then GREP="$GREP -E"
-else GREP=$(unalias egrep)
-fi
+# Look for ggrep (GNU grep) first.
+GREP=$(find_path ggrep /usr/gnu/bin:/opt/local/bin:/usr/local/bin:/bin:/usr/bin)
+# Failing that, look for a local grep(1) and assume it's preferred.
+[[ $GREP ]] || GREP=$(find_path grep /usr/gnu/bin:/opt/local/bin:/usr/local/bin)
+# Otherwise, default to regular grep(1).
+[[ $GREP ]] || GREP=$(unalias grep)
 
-GREP="exec $GREP"
+# See if grep accepts the -E (extended regexp) option.
+echo x | $GREP -E x >/dev/null 2>&1 && GREP="$GREP -E"
 
 # See if grep accepts the -i (ignore case) option.
 if [[ $INSENSITIVE ]]
@@ -122,7 +146,7 @@ fi
 # See if grep accepts the --include and -r (recursive) options.
 if echo x | $GREP --include x -r x >/dev/null 2>&1
 then
-  GREP="$GREP -r"
+  GREP="exec $GREP -r"
   if [[ $FILES2 ]]
   then $GREP --include "$FILES1" --include "$FILES2" "$PATTERN" .
   else $GREP --include "$FILES1" "$PATTERN" .
