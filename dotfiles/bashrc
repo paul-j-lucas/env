@@ -90,7 +90,7 @@ str_right() {
 # Look for ggrep (GNU grep) first.
 grep=$(find_path ggrep /bin:/usr/bin:/opt/local/bin:/usr/local/bin)
 # Failing that, look for a local grep(1) and assume it's preferred.
-[[ $grep ]] || grep=$(find_path grep /opt/local/bin:/usr/local/bin)
+[[ $grep ]] || grep=$(find_path grep /usr/gnu/bin:/opt/local/bin:/usr/local/bin)
 # Otherwise, default to regular grep(1).
 [[ $grep ]] || grep="grep"
 
