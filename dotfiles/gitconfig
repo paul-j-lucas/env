@@ -19,6 +19,7 @@ publish = push -u origin
 rename = branch -m
 sha = rev-parse HEAD
 stat = status
+undo-commit = reset HEAD~
 unpub = push origin --delete
 unpublish = push origin --delete
 
