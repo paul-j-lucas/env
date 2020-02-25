@@ -1,0 +1,15 @@
+# /bin/bash
+
+GCC='gcc -E -fpreprocessed -P -xc++'
+ME=`basename $0`
+
+# See if gcc supports the options we need.
+echo 'int main(){}' | $GCC - >/dev/null 2>&1 || {
+  echo "$ME: gcc doesn't support all of -E, -fpreprocessed, and -P options" >&2
+  exit 2
+}
+
+find . -name '*.c' -o -name '*.cpp' -o -name '*.h' | xargs cat |
+  $GCC - 2>/dev/null | wc -l
+
+# vim:set et sw=2 ts=2:
