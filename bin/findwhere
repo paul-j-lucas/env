@@ -54,6 +54,8 @@ then
   GREP=$(unalias rg)
   GREP="exec $GREP ${FOLLOW:+-L} $INSENSITIVE -l"
 
+  PATTERN=$(echo "$PATTERN" | sed -E 's!\\(<|>)!\\b!g')
+
   (( $# >= 2 )) || { echo $ME: -r requires file-pattern >&2; exit 2; }
   $GREP --glob '!.?*' --glob "$2" "$PATTERN"
 fi
