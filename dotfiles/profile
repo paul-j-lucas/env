@@ -60,7 +60,7 @@ _path=/usr/lib64/distcc/bin:\
 ~/local/bin:\
 /usr/gnu/bin:\
 /bin:/usr/bin:/sbin:/usr/sbin:\
-/usr/sfw/bin:/usr/ccs/bin:\
+/usr/sfw/bin:/usr/ccs/bin:/opt/csw/bin:\
 /opt/local/bin:/opt/local/sbin:\
 /usr/X11/bin:\
 /usr/local/bin:/usr/local/sbin:\
