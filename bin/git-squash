@@ -1,7 +1,7 @@
 #! /bin/sh
 ##
 #   git-squash -- Squash all the commits on a branch into a single commit.
-#   Version: 2.1
+#   Version: 2.2
 #
 #   Paul J. Lucas
 ##
@@ -17,9 +17,10 @@ ME=`basename $0`
 
 usage() {
   cat >&2 <<END
-usage: $ME [-dnpr] <branch-name> <main-branch-name>
+usage: $ME [-dmnpr] <branch-name> <main-branch-name>
 
 -d: Perform a dry-run by only printing what would be done.
+-m: Suppress merging from <main-branch-name> first.
 -n: Same as -d.
 -p: (Re)publish renamed squashed branch (implies -r).
 -r: Rename new <branch-name>-squashed branch to <branch-name> (replacing it).
@@ -27,13 +28,15 @@ END
   exit $1
 }
 
+MERGE_FROM_MAIN=true
 PUBLISH=false
 RENAME=false
 
-while getopts dnpr opt
+while getopts dmnpr opt
 do
   case $opt in
   d|n)  ECHO=echo ;;
+  m)    MERGE_FROM_MAIN=false ;;
   p)    PUBLISH=true; RENAME=true ;;
   r)    RENAME=true ;;
   ?)    usage 1 ;;
@@ -49,6 +52,35 @@ SQUASHED="${BRANCH}-squashed"
 ########## Do it.
 
 $ECHO git checkout "$MAIN"
+
+$MERGE_FROM_MAIN && {
+  $ECHO git pull || {
+    git checkout -f "$BRANCH"
+    cat >&2 <<END
+
+  The "git pull" of "$MAIN" failed.
+  Your original branch "$BRANCH" is unmodified.
+  You need to resolve the issues manually.
+  Then you may re-attempt $ME.
+
+    exit 2
+  }
+  $ECHO git checkout "$BRANCH"
+  $ECHO git merge "$MAIN" || {
+    git merge --abort
+    cat >&2 <<END
+
+  The "git merge $MAIN" failed (likely due to a merge conflict).
+  Your original branch $BRANCH is unmodified.
+  You need to do the merge, fix the conflicts, commit, and push (for safety),
+  all manually.
+  Then you may re-attempt $ME.
+  END
+    exit 3
+  }
+  $ECHO git commit -m"Merge from $MAIN."
+}
+
 $ECHO git branch "$SQUASHED"
 $ECHO git checkout "$SQUASHED"
 
@@ -58,10 +90,10 @@ $ECHO git fetch || {
   cat >&2 <<END
 
 The "git fetch" failed (likely due to the remote repository being unavailable).
-Your original branch $BRANCH is unmodified.  You may re-attempt $ME at a later
-time.
+Your original branch $BRANCH is unmodified.
+You may re-attempt $ME at a later time.
 END
-  exit 2
+  exit 4
 }
 
 $ECHO git reset --hard "$MAIN"
@@ -71,12 +103,13 @@ $ECHO git merge --squash "$BRANCH" || {
   git branch -D "$SQUASHED"
   cat >&2 <<END
 
-The "git merge" failed (likely due to a merge conflict).  Your original
-branch $BRANCH is unmodified.  You need to "git pull", fix the merge
-conflicts, commit, and push (for safety), all manually.  Then you may
-re-attempt $ME.
+The "git merge" failed (likely due to a merge conflict).
+Your original branch $BRANCH is unmodified.
+You need to do the merge, fix the conflicts, commit, and push (for safety),
+all manually.
+Then you may re-attempt $ME.
 END
-  exit 3
+  exit 5
 }
 
 $ECHO git commit
