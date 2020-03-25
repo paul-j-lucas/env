@@ -58,27 +58,28 @@ $MERGE_FROM_MAIN && {
     git checkout -f "$BRANCH"
     cat >&2 <<END
 
-  The "git pull" of "$MAIN" failed.
-  Your original branch "$BRANCH" is unmodified.
-  You need to resolve the issues manually.
-  Then you may re-attempt $ME.
-
+The "git pull" of "$MAIN" failed.
+Your original branch "$BRANCH" is unmodified.
+You need to resolve the issues manually.
+Then you may re-attempt $ME.
+END
     exit 2
   }
+
   $ECHO git checkout "$BRANCH"
   $ECHO git merge "$MAIN" || {
     git merge --abort
     cat >&2 <<END
 
-  The "git merge $MAIN" failed (likely due to a merge conflict).
-  Your original branch $BRANCH is unmodified.
-  You need to do the merge, fix the conflicts, commit, and push (for safety),
-  all manually.
-  Then you may re-attempt $ME.
-  END
+The "git merge $MAIN" failed (likely due to a merge conflict).
+Your original branch $BRANCH is unmodified.
+You need to do the merge, fix the conflicts, commit, and push (for safety),
+all manually.
+Then you may re-attempt $ME.
+END
     exit 3
   }
-  $ECHO git commit -m"Merge from $MAIN."
+  $ECHO git commit -m"Merge from $MAIN." || true
 }
 
 $ECHO git branch "$SQUASHED"
