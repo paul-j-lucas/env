@@ -30,8 +30,8 @@ import sys
 
 ###############################################################################
 
-ROOT_DIR = '/usr/local'
-PACKAGES_DIR = 'packages'
+ROOT_DIR_DEFAULT = '/usr/local'
+PACKAGES_DIR_DEFAULT = 'packages'
 
 LOCAL_SUBDIRS = {
     'bin', 'etc', 'include', 'info', 'lib', 'sbin',
@@ -310,14 +310,14 @@ parser.add_argument(
 )
 
 parser.add_argument(
-    "-p", "--packages", default=PACKAGES_DIR, dest="packages_dir",
+    "-p", "--packages", default=PACKAGES_DIR_DEFAULT, dest="packages_dir",
     metavar="<dir>",
-    help="set packages location directory [default: %s]" % PACKAGES_DIR
+    help="set packages location directory [default: %s]" % PACKAGES_DIR_DEFAULT
 )
 
 parser.add_argument(
-    "-r", "--root", default=ROOT_DIR, dest="root_dir", metavar="<dir>",
-    help="set root directory [default: %s]" % ROOT_DIR
+    "-r", "--root", default=ROOT_DIR_DEFAULT, dest="root_dir", metavar="<dir>",
+    help="set root directory [default: %s]" % ROOT_DIR_DEFAULT
 )
 
 parser.add_argument(
