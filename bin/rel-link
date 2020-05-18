@@ -1,0 +1,155 @@
+#! /usr/bin/env python3
+##
+#   Script:     rel-link -- change symbolic links to absolute paths to be
+#               relative
+#   Version:    1.0
+#
+#   Copyright (C) 2020  Paul J. Lucas
+#
+#   This program is free software: you can redistribute it and/or modify it
+#   under the terms of the GNU General Public License as published by the Free
+#   Software Foundation, either version 3 of the License, or (at your option)
+#   any later version.
+#
+#   This program is distributed in the hope that it will be useful, but WITHOUT
+#   ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+#   FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+#   more details.
+#
+#   You should have received a copy of the GNU General Public License along
+#   with this program.  If not, see <http://www.gnu.org/licenses/>.
+##
+
+import argparse
+import errno
+import os
+import sys
+from stat import *
+
+###############################################################################
+
+ME = os.path.basename( sys.argv[0] )
+ROOT_DIR_DEFAULT = '/'
+
+########## Functions ##########################################################
+
+def assert_isdir( path ):
+    """Asserts that the path is a directory."""
+    if not os.path.isdir( path ):
+        error( "\"%s\": not a directory" % path )
+
+
+def error( *objs ):
+    """Prints an error message to standard error and exits."""
+    print( ME + ":", "error:", *objs, file = sys.stderr )
+    sys.exit( 1 )
+
+
+def iterate_over( dir ):
+    """Relativize all the symbolic links in a directory."""
+    for subdir, _, files in os.walk( dir ):
+        for file in files:
+            path = os.path.join( subdir, file )
+            if os.path.islink( path ):
+                relativize( path )
+
+
+def ln_fs( src_path, dest_path ):
+    """Create a symbolic link like `ln -fs` would."""
+    if args.dry_run:
+        print( "ln -fs %s %s" % (src_path, dest_path) )
+    else:
+        try:
+            os.remove( dest_path )
+        except OSError as e:
+            if e.errno != errno.ENOENT:
+                skip( dest_path, e.errno )
+                return
+        try:
+            os.symlink( src_path, dest_path )
+        except OSError as e:
+            skip( dest_path, e.errno )
+
+
+def os_path_force_join( path, *paths ):
+    """Force a path join even if paths[0] is absolute,
+       e.g., '/a' + '/b' -> '/a/b'"."""
+    return os.path.join( path, paths[0].lstrip( os.sep ), *paths[1:] )
+
+
+def os_path_pwd_path( path ):
+    """Variant of os.path.abspath() that uses $PWD (the directory the user cd'd
+       to) rather than os.getcwd() (the actual directory the user is in).
+       These can differ when $PWD contains symlink(s).  We need to keep the
+       symlink(s), if any, as-is."""
+    if not os.path.isabs( path ):
+        path = os.path.join( os.environ.get( 'PWD' ), path )
+    return path
+
+
+def relativize( link ):
+    """Relativize a symbolic link."""
+    target = os.readlink( link )
+    if os.path.isabs( target ):
+        if not target.startswith( args.root_dir + os.sep ):
+            target = os_path_force_join( args.root_dir, target )
+        link_dir = os.path.join( args.root_dir, os.path.dirname( link ) )
+        new_target = os.path.relpath( target, link_dir )
+        ln_fs( new_target, link )
+
+
+def skip( path, error ):
+    if type( error ) == int:
+        error = os.strerror( error )
+    warn( "\"%s\": %s; skipped" % (path, error) )
+
+
+def warn( *objs ):
+    """Prints a warning message to standard error."""
+    print( ME + ":", "warning:", *objs, file = sys.stderr )
+
+
+########## Process command line ###############################################
+
+parser = argparse.ArgumentParser(
+    formatter_class=argparse.RawDescriptionHelpFormatter,
+    description="Relativize absolute symbolc links."
+)
+
+parser.add_argument(
+    "path", nargs='+',
+    help="a symbolic link or a directory"
+)
+
+parser.add_argument(
+    "-d", "--dry-run", "-n", action="store_true", default=False,
+    help="print what would be done but don't actually do it"
+)
+
+parser.add_argument(
+    "-r", "--root", default=ROOT_DIR_DEFAULT, dest="root_dir", metavar="<dir>",
+    help="treat <dir> as if it were /"
+)
+
+args = parser.parse_args()
+
+assert_isdir( args.root_dir )
+if not os.path.isabs( args.root_dir ):
+    error( "\"%s\": must be an absolute path" % args.root_dir )
+
+###############################################################################
+
+for path in args.path:
+    path = os_path_pwd_path( path )
+    try:
+        mode = os.lstat( path ).st_mode
+    except OSError as e:
+        skip( path, e.errno )
+        continue
+    if S_ISDIR( mode ):
+        iterate_over( path )
+    elif S_ISLNK( mode ):
+        relativize( path )
+
+###############################################################################
+# vim:set et sw=4 ts=4:
