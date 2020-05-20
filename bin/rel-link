@@ -34,12 +34,6 @@ ROOT_DIR_DEFAULT = '/'
 
 ########## Functions ##########################################################
 
-def assert_isdir( path ):
-    """Asserts that the path is a directory."""
-    if not os.path.isdir( path ):
-        error( "\"%s\": not a directory" % path )
-
-
 def error( *objs ):
     """Prints an error message to standard error and exits."""
     print( ME + ":", "error:", *objs, file = sys.stderr )
@@ -100,6 +94,7 @@ def relativize( link ):
 
 
 def skip( path, error ):
+    """Warn that a file was skipped due to an error."""
     if type( error ) == int:
         error = os.strerror( error )
     warn( "\"%s\": %s; skipped" % (path, error) )
@@ -134,7 +129,8 @@ parser.add_argument(
 
 args = parser.parse_args()
 
-assert_isdir( args.root_dir )
+if not os.path.isdir( args.root_dir ):
+    error( "\"%s\": not a directory" % args.root_dir )
 if not os.path.isabs( args.root_dir ):
     error( "\"%s\": must be an absolute path" % args.root_dir )
 
