@@ -58,7 +58,7 @@ LOCAL_SUBDIRS = {
     'share/man/man9'
 }
 
-ME = os.path.basename( sys.argv[0] )
+ME = os.path.basename( __file__ )
 
 ########## Functions ##########################################################
 

@@ -28,7 +28,7 @@ from stat import *
 
 ###############################################################################
 
-ME = os.path.basename( sys.argv[0] )
+ME = os.path.basename( __file__ )
 PWD = os.environ.get( 'PWD' )
 ROOT_DIR_DEFAULT = '/'
 
