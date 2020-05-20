@@ -29,6 +29,7 @@ from stat import *
 ###############################################################################
 
 ME = os.path.basename( sys.argv[0] )
+PWD = os.environ.get( 'PWD' )
 ROOT_DIR_DEFAULT = '/'
 
 ########## Functions ##########################################################
@@ -83,7 +84,7 @@ def os_path_pwd_path( path ):
        These can differ when $PWD contains symlink(s).  We need to keep the
        symlink(s), if any, as-is."""
     if not os.path.isabs( path ):
-        path = os.path.join( os.environ.get( 'PWD' ), path )
+        path = os.path.join( PWD, path )
     return path
 
 
