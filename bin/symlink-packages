@@ -34,7 +34,7 @@ ROOT_DIR_DEFAULT = '/usr/local'
 PACKAGES_DIR_DEFAULT = 'packages'
 
 LOCAL_SUBDIRS = {
-    'bin', 'doc', 'etc', 'include', 'info', 'lib', 'libexec', 'sbin',
+    'bin', 'doc', 'etc', 'include', 'info', 'lib', 'lib64', 'libexec', 'sbin',
     'man',
     'man/man1',
     'man/man2',
