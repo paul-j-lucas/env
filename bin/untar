@@ -1,0 +1,37 @@
+#! /bin/sh
+##
+#   Script:   untar -- untar a compressed tar file
+#   Version:  1.0
+#
+#   Author:   Paul J. Lucas
+##
+
+ME=`basename $0`
+
+error() {
+  echo "$ME: $*"
+  exit 65
+}
+
+untar() {
+  case "$1" in
+  *.tar.bz2|*.tbz2)
+    tar xfj "$1"
+    ;;
+  *.tar.gz|*.tgz)
+    tar xfz "$1"
+    ;;
+  *.tar.xz|*.txz)
+    tar xfJ "$1"
+    ;;
+  *)
+    error "$1: unknown filename extension"
+    ;;
+  esac
+}
+
+for file in $*
+do untar "$file"
+done
+
+# vim:set et sw=2 ts=2:
