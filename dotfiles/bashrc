@@ -29,6 +29,7 @@ then
   setopt    interactive_comments
   setopt no_list_beep
   setopt no_list_types
+  setopt +o nomatch
   setopt    rm_star_silent
   setopt    share_history
   setopt    sh_word_split
