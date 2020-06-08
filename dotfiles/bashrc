@@ -34,6 +34,14 @@ then
   setopt    sh_word_split
 
   ##
+  # Make zsh have the same behavior as bash/ksh93: typing Esc-K (in vi command
+  # mode) to move back in command-line history puts the cursor at the BEGINNING
+  # of the line; same for Esc-J, but forward in history.
+  ##
+  bindkey -a j vi-down-line-or-history
+  bindkey -a k vi-up-line-or-history
+
+  ##
   # Make zsh have the same behavior as bash/ksh93: typing _ (in vi command
   # mode) inserts a space (if needed) followed by the last word of the previous
   # command.
