@@ -39,8 +39,8 @@ then
   # mode) to move back in command-line history puts the cursor at the BEGINNING
   # of the line; same for Esc-J, but forward in history.
   ##
-  bindkey -a j vi-down-line-or-history
-  bindkey -a k vi-up-line-or-history
+  bindkey -M vicmd j vi-down-line-or-history
+  bindkey -M vicmd k vi-up-line-or-history
 
   ##
   # Make zsh have the same behavior as bash/ksh93: typing _ (in vi command
