@@ -1,6 +1,9 @@
 [user]
 name = Paul J. Lucas
 
+[pull]
+rebase = false
+
 [push]
 default = simple
 
