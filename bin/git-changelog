@@ -1,7 +1,7 @@
 #! /usr/bin/perl
 ##
 #   Script:   git-changelog -- create a GNU-style ChangeLog from git
-#   Version:  1.1
+#   Version:  1.2
 #
 #   Author:   Paul J. Lucas
 ##
@@ -31,9 +31,13 @@ while ( <GIT_LOG> ) {
           print "$date_nl$date  $author <$email>\n\n";
           $prev_date = $date;
           $date_nl = "\n";
+          undef $last_change
         }
         my $change = join( ", ", @files ) . ": $message";
-        print wrap( "   * ", "     ", $change ), "\n";
+        if ( $change ne $last_change ) {
+          print wrap( "   * ", "     ", $change ), "\n";
+          $last_change = $change
+        }
       }
       @files = ();
     }
