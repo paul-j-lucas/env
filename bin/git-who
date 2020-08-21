@@ -27,7 +27,7 @@ END
 ########## Do it.
 
 git blame $* |
-  cut -c15-37 |
+  cut -c15-36 |
   sort | uniq -c |
   egrep -v '(Unknown|Not Committed Yet)' |
   sort -nr
