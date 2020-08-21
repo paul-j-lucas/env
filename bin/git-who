@@ -1,0 +1,36 @@
+#! /bin/sh
+##
+#   git-who -- Show those who have modified a file.
+#   Version: 1.0
+#
+#   Paul J. Lucas
+##
+
+set -e # stop on error
+
+# uncomment to debug
+#set -x
+
+###############################################################################
+
+ME=`basename $0`
+
+usage() {
+  cat >&2 <<END
+usage: $ME file
+END
+  exit $1
+}
+
+[ $# -eq 1 ] || usage
+
+########## Do it.
+
+git blame $* |
+  cut -c15-37 |
+  sort | uniq -c |
+  egrep -v '(Unknown|Not Committed Yet)' |
+  sort -nr
+
+###############################################################################
+# vim:set et sw=2 ts=2:
