@@ -8,7 +8,7 @@ rebase = false
 default = simple
 
 [alias]
-bn = rev-parse --abbrev-ref HEAD
+bn = branch-name
 branch-name = rev-parse --abbrev-ref HEAD
 co = checkout
 comit = commit
@@ -17,13 +17,13 @@ comti = commit
 last-tag = describe --tags --abbrev=0
 pick = cherry-pick --edit --no-commit -x
 psuh = push
-pub = push -u origin
+pub = publish
 publish = push -u origin
 rename = branch -m
 sha = rev-parse HEAD
 stat = status
 undo-commit = reset HEAD~
-unpub = push origin --delete
+unpub = unpublish
 unpublish = push origin --delete
 
 [include]
