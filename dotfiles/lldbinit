@@ -1,3 +1,5 @@
+settings set target.load-cwd-lldbinit true
+
 # breakpoints
 command alias bd          breakpoint delete
 command alias bl          breakpoint list
