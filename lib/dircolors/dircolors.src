@@ -99,6 +99,7 @@ SETUID			32;01
 .mm	33
 .pl	33
 .pm	33
+.py	33
 .sh	33
 .tcc	33
 .xs	33
