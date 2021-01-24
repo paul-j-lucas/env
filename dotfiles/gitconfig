@@ -14,6 +14,7 @@ co = checkout
 comit = commit
 commti = commit
 comti = commit
+delete-remote-tag = "!f() { git push origin :refs/tags/$1; }; f"
 last-tag = describe --tags --abbrev=0
 pick = cherry-pick --edit --no-commit -x
 psuh = push
@@ -22,6 +23,7 @@ publish = push -u origin
 rename = branch -m
 sha = rev-parse HEAD
 stat = status
+top = rev-parse --show-toplevel
 undo-commit = reset HEAD~
 unpub = unpublish
 unpublish = push origin --delete
