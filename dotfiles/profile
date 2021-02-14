@@ -29,8 +29,8 @@ CDPATH=$CDPATH0:~
 export CDPATH0 CDPATH
 
 _path=/usr/share/info:\
-/opt/local/share/info:\
-/usr/local/share/info
+/usr/local/share/info:\
+/opt/local/share/info
 INFOPATH=`test_path $_path`
 export INFOPATH
 
@@ -51,8 +51,8 @@ _path=~/local/share/man:\
 /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/share/man:\
 /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/share/man:\
 /usr/X11/share/man:\
-/opt/local/share/man:\
-/usr/local/share/man
+/usr/local/share/man:\
+/opt/local/share/man
 MANPATH=`test_path $_path`
 export MANPATH
 
@@ -60,10 +60,10 @@ _path=/usr/lib64/distcc/bin:\
 ~/local/bin:\
 /usr/gnu/bin:\
 /bin:/usr/bin:/sbin:/usr/sbin:\
-/usr/sfw/bin:/usr/ccs/bin:/opt/csw/bin:\
-/opt/local/bin:/opt/local/sbin:\
-/usr/X11/bin:\
 /usr/local/bin:/usr/local/sbin:\
+/usr/sfw/bin:/usr/ccs/bin:/opt/csw/bin:\
+/usr/X11/bin:\
+/opt/local/bin:/opt/local/sbin:\
 ~/bin
 PATH0=`test_path $_path`
 PATH=$PATH0:.
