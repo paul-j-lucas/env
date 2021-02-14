@@ -8,13 +8,16 @@ rebase = false
 default = simple
 
 [alias]
+b = branch
 bn = branch-name
 branch-name = rev-parse --abbrev-ref HEAD
 co = checkout
 comit = commit
 commti = commit
 comti = commit
+d = diff
 delete-remote-tag = "!f() { git push origin :refs/tags/$1; }; f"
+ds = diff --staged
 last-tag = describe --tags --abbrev=0
 pick = cherry-pick --edit --no-commit -x
 psuh = push
@@ -22,6 +25,7 @@ pub = publish
 publish = push -u origin
 rename = branch -m
 sha = rev-parse HEAD
+s = status
 stat = status
 top = rev-parse --show-toplevel
 undo-commit = reset HEAD~
