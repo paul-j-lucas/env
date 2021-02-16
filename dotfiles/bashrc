@@ -31,7 +31,7 @@ then
   setopt no_list_types
   setopt +o nomatch
   setopt    rm_star_silent
-  setopt    share_history
+ #setopt    share_history
   setopt    sh_word_split
 
   ##
@@ -96,10 +96,13 @@ str_right() {
 
 ##### grep alias ##############################################################
 
+LOCAL_PATH=/usr/local/bin:/opt/local/bin
+GNU_PATH=$LOCAL_PATH:/usr/gnu/bin:/usr/bin:/bin
+
 # Look for ggrep (GNU grep) first.
-grep=$(find_path ggrep /bin:/usr/bin:/opt/local/bin:/usr/local/bin)
+grep=$(find_path ggrep $GNU_PATH)
 # Failing that, look for a local grep(1) and assume it's preferred.
-[[ $grep ]] || grep=$(find_path grep /usr/gnu/bin:/opt/local/bin:/usr/local/bin)
+[[ $grep ]] || grep=$(find_path grep $GNU_PATH)
 # Otherwise, default to regular grep(1).
 [[ $grep ]] || grep="grep"
 
@@ -113,14 +116,12 @@ then
 fi
 [[ $grep == "grep" ]] || alias grep="$grep"
 
-unset grep
-
 ##### ls aliases ##############################################################
 
 # Look for GNU ls(1) first since it's more flexible.
-ls=$(find_path gls /opt/local/bin:/usr/local/bin:/usr/bin:/bin)
+ls=$(find_path gls $GNU_PATH)
 # Failing that, look for a local ls(1) and assume it's preferred.
-[[ $ls ]] || ls=$(find_path ls /opt/local/bin:/usr/local/bin)
+[[ $ls ]] || ls=$(find_path ls $LOCAL_PATH)
 # Otherwise, default to regular ls(1).
 [[ $ls ]] || ls="ls"
 
@@ -139,9 +140,6 @@ fi
 
 alias lf="$ls"; alias fl=lf
 alias ll="$ls -l $ls_time"
-unset ls
-unset ls_nl
-unset ls_time
 
 ##### Prompt ##################################################################
 
@@ -320,5 +318,11 @@ mycd .
 ##### Miscellaneous ###########################################################
 
 unset -f find_path
+unset GNU_PATH
+unset grep
+unset LOCAL_PATH
+unset ls
+unset ls_nl
+unset ls_time
 
 # vim:set et sw=2 ts=2:
