@@ -20,6 +20,7 @@ delete-remote-tag = "!f() { git push origin :refs/tags/$1; }; f"
 ds = diff --staged
 dsw = diff --staged -w
 dw = diff -w
+fix = "!f() { git gc --prune=now; git remote prune origin; }; f"
 last-tag = describe --tags --abbrev=0
 pick = cherry-pick --edit --no-commit -x
 psuh = push
