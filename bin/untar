@@ -1,7 +1,7 @@
 #! /bin/sh
 ##
 #   Script:   untar -- untar a compressed tar file
-#   Version:  1.0
+#   Version:  1.1
 #
 #   Author:   Paul J. Lucas
 ##
@@ -15,6 +15,9 @@ error() {
 
 untar() {
   case "$1" in
+  *.tar)
+    tar xf "$1"
+    ;;
   *.tar.bz2|*.tbz2)
     tar xfj "$1"
     ;;
