@@ -1,3 +1,4 @@
+command script import ~/.lldb/write.py
 settings set target.load-cwd-lldbinit true
 
 # breakpoints
@@ -30,6 +31,7 @@ command alias set-args    settings set target.run-args
 command alias until       thread until
 
 # misc
+command alias bta         thread backtrace all
 command alias core        target create -c %1
 command alias denv        settings set target.env-vars %1
 command alias env         settings set target.env-vars %1=%2
