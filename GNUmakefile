@@ -1,4 +1,4 @@
-SUBDIRS:=	bin dotfiles lib
+SUBDIRS:=	bin dotfiles lib lldb
 
 all clean: $(SUBDIRS)
 	@for DIR in $(SUBDIRS); do $(MAKE) -C $$DIR $@; done
