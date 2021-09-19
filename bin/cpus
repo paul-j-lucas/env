@@ -18,7 +18,7 @@ cpus() {
     sysctl -n hw.ncpu
     ;;
   Linux)
-    grep '^processor' /proc/cpuinfo | wc -l
+    grep 'cpu[0-9]' /proc/stat | wc -l
     ;;
   SunOS)
     psrinfo | wc -l
