@@ -23,6 +23,7 @@ dw = diff -w
 dws = dsw
 fix = "!f() { git gc --prune=now; git remote prune origin; }; f"
 last-tag = describe --tags --abbrev=0
+log = log --follow
 pick = cherry-pick --edit --no-commit -x
 psuh = push
 pub = publish
