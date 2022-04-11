@@ -8,6 +8,8 @@
 #set -x
 
 ME=$(basename $0)
+LOCAL_PATHS=/usr/gnu/bin:/opt/local/bin:/usr/local/bin
+STD_PATHS=/bin:/usr/bin
 
 ##### Functions ###############################################################
 
@@ -122,9 +124,9 @@ then
 fi
 
 # Look for ggrep (GNU grep) first.
-GREP=$(find_path ggrep /usr/gnu/bin:/opt/local/bin:/usr/local/bin:/bin:/usr/bin)
+GREP=$(find_path ggrep $LOCAL_PATHS:$STD_PATHS)
 # Failing that, look for a local grep(1) and assume it's preferred.
-[[ $GREP ]] || GREP=$(find_path grep /usr/gnu/bin:/opt/local/bin:/usr/local/bin)
+[[ $GREP ]] || GREP=$(find_path grep $LOCAL_PATHS)
 # Otherwise, default to regular grep(1).
 [[ $GREP ]] || GREP=$(unalias grep)
 
@@ -132,27 +134,19 @@ GREP=$(find_path ggrep /usr/gnu/bin:/opt/local/bin:/usr/local/bin:/bin:/usr/bin)
 GREP=$(add_sup_opt $GREP -E)
 
 # See if grep accepts the -i (ignore case) option.
-if [[ $INSENSITIVE ]]
-then GREP=$(add_sup_opt $GREP $INSENSITIVE)
-fi
+[[ $INSENSITIVE ]] && GREP=$(add_sup_opt $GREP $INSENSITIVE)
 
 # See if grep accepts the -I (ignore binary files) option.
 GREP=$(add_sup_opt $GREP -I)
 
 # See if grep accepts the -n (line number) option.
-if [[ $LINE_NUMBER ]]
-then GREP=$(add_sup_opt $GREP $LINE_NUMBER)
-fi
+[[ $LINE_NUMBER ]] && GREP=$(add_sup_opt $GREP $LINE_NUMBER)
 
 # See if grep accepts the -N (name only) option.
-if [[ $NAME_ONLY ]]
-then GREP=$(add_sup_opt $NAME_ONLY)
-fi
+[[ $NAME_ONLY ]] && GREP=$(add_sup_opt $NAME_ONLY)
 
 # See if grep accepts the -S (follow symlinks) option.
-if $FOLLOW
-then GREP=$(add_sup_opt -S)
-fi
+$FOLLOW && GREP=$(add_sup_opt -S)
 
 # See if grep accepts the --include and -r (recursive) options.
 if echo x | $GREP --include x -r x >/dev/null 2>&1
