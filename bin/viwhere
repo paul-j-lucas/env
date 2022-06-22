@@ -1,4 +1,4 @@
-#! /bin/bash
+#! /usr/bin/env bash
 ##
 #   Script:   viwhere -- vi files where pattern is present
 #   Version:  1.6

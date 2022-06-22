@@ -1,4 +1,4 @@
-# /bin/bash
+#! /usr/bin/env bash
 
 GCC='gcc -E -fpreprocessed -P -xc++'
 ME=`basename $0`

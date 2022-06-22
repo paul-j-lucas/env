@@ -1,4 +1,4 @@
-#! /bin/bash
+#! /usr/bin/env bash
 ##
 #   Script:   findwhere -- find files where pattern is present
 #   Version:  3.0

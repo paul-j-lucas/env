@@ -1,4 +1,4 @@
-#! /bin/bash
+#! /usr/bin/env bash
 
 ME=$(basename $0)
 (( $# == 2 )) || { echo "usage: $ME start end" >&2; exit 1; }

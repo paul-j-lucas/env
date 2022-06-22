@@ -1,4 +1,4 @@
-#! /bin/bash
+#! /usr/bin/env bash
 ##
 #   Script:   git-vdiff -- diff between current and recent copies in git for
 #             Mac OS X

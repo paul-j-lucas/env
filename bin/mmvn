@@ -1,4 +1,4 @@
-#! /bin/bash
+#! /usr/bin/env bash
 ##
 #   Script:   mmvn -- multiple move (rename) files to prefix-#
 #   Version:  1.1
