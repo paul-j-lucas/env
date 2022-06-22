@@ -1,3 +1,10 @@
+handle SIGPIPE nostop
+handle SIGUSR1 nostop ignore
+
+set disassembly-flavor intel
+set print array-indexes on
+set print object on
+set print pretty on
 set print static-members off
 set print thread-events off
 
