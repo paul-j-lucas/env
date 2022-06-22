@@ -1,4 +1,4 @@
-#! /usr/bin/env python
+#! /usr/bin/env python3
 ##
 #   Script:     symlink-packages -- create symbolic links in /usr/local.
 #   Version:    1.2
@@ -69,7 +69,7 @@ def assert_isdir( path ):
 
 
 def create_symlinks( dir, subdir, dir_dict ):
-    for file_or_dir, contents in dir_dict.iteritems():
+    for file_or_dir, contents in dir_dict.items():
         file_or_dir_path = os.path.join( dir, file_or_dir )
         if type( contents ) == dict:    # contents is a directory
             if contents:                # ... that is not empty
