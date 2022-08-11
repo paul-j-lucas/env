@@ -54,6 +54,7 @@ usage: $ME [-cCfghilmnpsy] pattern [glob]
 
 -c: Grep through .c files only.
 -C: Grep through .cpp files only.
+-e: Echo the command only.
 -f: Print file name only.
 -g: Grep through .go files only.
 -h: Grep through .h files only.
@@ -72,13 +73,15 @@ END
 
 ##### Main ####################################################################
 
+EXEC=exec
 FOLLOW=false
 
-while getopts cCfghilmnpsy opt
+while getopts cCefghilmnpsy opt
 do
   case $opt in
   c) FILES1="*.c"   ;;
   C) FILES1="*.cpp" ;;
+  e) EXEC="echo"    ;;
   f) NAME_ONLY=-l   ;;
   g) FILES1="*.go"  ;;
   h) FILES1="*.h"   ;;
@@ -113,14 +116,15 @@ if command -v rg >/dev/null 2>/dev/null
 then
   [[ $LINE_NUMBER ]] || LINE_NUMBER=-N
   GREP=$(unalias rg)
-  GREP="exec $GREP ${FOLLOW:+-L} $INSENSITIVE $LINE_NUMBER $NAME_ONLY"
+  GREP="$GREP ${FOLLOW:+-L} $INSENSITIVE $LINE_NUMBER $NAME_ONLY"
 
   PATTERN=$(echo "$PATTERN" | sed -E 's!\\(<|>)!\\b!g')
 
   if [[ $FILES2 ]]
-  then $GREP --glob "$FILES1" --glob "$FILES2" "$PATTERN"
-  else $GREP --glob "$FILES1" "$PATTERN"
+  then $EXEC $GREP --glob "$FILES1" --glob "$FILES2" "$PATTERN"
+  else $EXEC $GREP --glob "$FILES1" "$PATTERN"
   fi
+  exit 0
 fi
 
 # Look for ggrep (GNU grep) first.
@@ -151,18 +155,25 @@ $FOLLOW && GREP=$(add_sup_opt -S)
 # See if grep accepts the --include and -r (recursive) options.
 if echo x | $GREP --include x -r x >/dev/null 2>&1
 then
-  GREP="exec $GREP -r"
+  GREP="$GREP -r"
   if [[ $FILES2 ]]
-  then $GREP --include "$FILES1" --include "$FILES2" "$PATTERN" .
-  else $GREP --include "$FILES1" "$PATTERN" .
+  then $EXEC $GREP --include "$FILES1" --include "$FILES2" "$PATTERN" .
+  else $EXEC $GREP --include "$FILES1" "$PATTERN" .
   fi
 else
-  if [[ $FILES2 ]]
-  then find . -name "$FILES1" -o -name "$FILES2"
-  else find . -name "$FILES1"
-  fi | xargs grep "$PATTERN"
+  if [[ $EXEC = "exec" ]]
+  then
+    if [[ $FILES2 ]]
+    then find . -name "$FILES1" -o -name "$FILES2"
+    else find . -name "$FILES1"
+    fi | xargs grep "$PATTERN"
+  else
+    if [[ $FILES ]]
+    then echo "find . -name \"$FILES1\" -o -name \"$FILES2\" | xargs grep \"$PATTERN\""
+    else echo "find . -name \"$FILES1\" | xargs grep \"$PATTERN\""
+    fi
+  fi
 fi
-
 
 ###############################################################################
 # vim:set et sw=2 ts=2:
