@@ -55,6 +55,12 @@ then
   zle -N insert-space-last-word
   bindkey -M vicmd _ insert-space-last-word
 
+  ##
+  # Remove the annoying delay required between Esc-/ to start a command history
+  # search.
+  ##
+  bindkey -M viins -r "^[/"
+
   zle_highlight+=(paste:none)           # disable paste highlighting
 fi
 
