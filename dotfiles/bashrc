@@ -244,8 +244,8 @@ alias wpd=pwd
 
 ##### Function aliases ########################################################
 
-alias gdbbt=_gdbbt
-  function _gdbbt {
+alias gdbbt=pjl_gdbbt
+  function pjl_gdbbt {
     gdb --batch --quiet -ex 'thread apply all bt' -ex quit $*
   }
 
