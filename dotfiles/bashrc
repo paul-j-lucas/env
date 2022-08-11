@@ -253,8 +253,8 @@ alias rsh=_rsh
   function _rsh {
     TERM=ansi \rsh $*; mycd .
   }
-alias ssh=_ssh
-  function _ssh {
+alias ssh=pjl_ssh
+  function pjl_ssh {
     \ssh $*; mycd .
   }
 
