@@ -249,10 +249,6 @@ alias gdbbt=_gdbbt
     gdb --batch --quiet -ex 'thread apply all bt' -ex quit $*
   }
 
-alias rsh=_rsh
-  function _rsh {
-    TERM=ansi \rsh $*; mycd .
-  }
 alias ssh=pjl_ssh
   function pjl_ssh {
     \ssh $*; mycd .
