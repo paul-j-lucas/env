@@ -5,20 +5,12 @@
 #   + The human-readable date/time for the given number of seconds since epoch.
 ##
 
-use File::Basename;
-
-$me = basename( $0 );
-
-sub usage() {
-  die "usage: $me [seconds]\n";
-}
-
 if ( @ARGV == 0 ) {
   print time(), "\n";
-} elsif ( @ARGV == 1 ) {
-  print scalar gmtime( $ARGV[0] ), "\n";
 } else {
-  usage();
+  for ( 0 .. @ARGV - 1 ) {
+    print scalar gmtime( $ARGV[$_] ), "\n";
+  }
 }
 
 # vim:set et sw=2 ts=2:
