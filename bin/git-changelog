@@ -1,7 +1,7 @@
 #! /usr/bin/perl
 ##
 #   Script:   git-changelog -- create a GNU-style ChangeLog from git
-#   Version:  1.3
+#   Version:  1.4
 #
 #   Author:   Paul J. Lucas
 ##
@@ -27,8 +27,9 @@ while ( <GIT_LOG> ) {
   /^\d{4}/ && do {
     if ( @files ) {
       unless ( $message =~ m!(?:Intermediate|Clean|Comment|Cosmetic|Doxygen|[Tt]weak|Typo)! ) {
-        if ( $date ne $prev_date ) {
+        if ( $author ne $prev_author || $date ne $prev_date ) {
           print "$date_nl$date  $author <$email>\n\n";
+          $prev_author = $author;
           $prev_date = $date;
           $date_nl = "\n";
           undef $last_change
