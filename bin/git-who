@@ -26,8 +26,7 @@ END
 
 ########## Do it.
 
-git blame $* |
-  cut -c15-32 |
+git blame --porcelain $* | grep '^author ' | cut -f2- -d' ' |
   sort | uniq -c |
   egrep -v '(Unknown|Not Committed Yet)' |
   sort -nr
