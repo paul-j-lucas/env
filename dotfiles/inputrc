@@ -1,5 +1,5 @@
 set bind-tty-special-chars off
-set completion-query-items 500
+set colored-stats on
 set editing-mode vi
 set expand-tilde off
 set keymap vi-insert
