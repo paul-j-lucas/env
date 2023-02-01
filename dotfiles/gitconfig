@@ -1,5 +1,9 @@
 [user]
 name = Paul J. Lucas
+email = paul@lucasmail.org
+
+[init]
+defaultBranch = master
 
 [pull]
 rebase = false
@@ -11,6 +15,7 @@ default = simple
 b = branch
 bn = branch-name
 branch-name = rev-parse --abbrev-ref HEAD
+changes = log --find-renames --follow --patch --stat --
 co = checkout
 comit = commit
 commti = commit
@@ -36,6 +41,15 @@ top = rev-parse --show-toplevel
 undo-commit = reset HEAD~
 unpub = unpublish
 unpublish = push origin --delete
+who = "!f() { git blame $1 | cut -c15-36 | sort | uniq -c | sort -nr; }; f"
 
 [include]
 path = ~/.gitconfig-local
+
+[filter "lfs"]
+	clean = git-lfs clean -- %f
+	smudge = git-lfs smudge -- %f
+	process = git-lfs filter-process
+	required = true
+[http]
+	sslverify = false
