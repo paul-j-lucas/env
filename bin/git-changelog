@@ -1,7 +1,7 @@
 #! /usr/bin/perl
 ##
 #   Script:   git-changelog -- create a GNU-style ChangeLog from git
-#   Version:  1.4
+#   Version:  1.5
 #
 #   Author:   Paul J. Lucas
 ##
@@ -43,7 +43,7 @@ while ( <GIT_LOG> ) {
       }
       @files = ();
     }
-    ( $date, $author, $email, $message ) = split( /\|/ );
+    ( $date, $author, $email, $message ) = split( /\|/, $_, 4 );
     $email = $EMAIL_TO if $email =~ $EMAIL_FROM;
   };
 
