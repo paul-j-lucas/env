@@ -50,7 +50,7 @@ while ( <GIT_LOG> ) {
   /^[AM]\s+([^\s].*)$/ && do {
     my $file = $1;
     my $base = basename( $file );
-    next if $base =~ m!^(?:ChangeLog|.git\w+|README.md)$!;
+    next if $base =~ m!^(?:ChangeLog|.git\w+|README.md|NEWS)$!;
     unless ( $base =~ m!^(?:Makefile\.\w+)$! ) {
       $file =~ s!^man/man([1-9])/(\w+\.\g1)!$2!;
       $file =~ s!^(?:bin|lib|m4|src)/(.+)$!$1!;
