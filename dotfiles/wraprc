@@ -2,7 +2,6 @@
 code   = --markdown
 c-like = @code --comment-chars=/*,// --doxygen
 markup = --eos-delimit --para-chars=,:;
-mu     = @markup
 man    = @markup --dot-ignore
 script = @code --comment-chars=\#
 
