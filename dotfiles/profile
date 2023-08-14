@@ -56,19 +56,20 @@ _path=~/local/share/man:\
 MANPATH=`test_path $_path`
 export MANPATH
 
-_path=/usr/lib64/distcc/bin:\
-~/local/bin:\
+_path=~/local/bin:\
+/opt/local/bin:/opt/local/sbin:\
 /usr/gnu/bin:\
-/bin:/usr/bin:/sbin:/usr/sbin:\
 /usr/local/bin:/usr/local/sbin:\
+/usr/local/go/bin:\
 /usr/sfw/bin:/usr/ccs/bin:/opt/csw/bin:\
 /usr/X11/bin:\
-/opt/local/bin:/opt/local/sbin:\
+/bin:/usr/bin:/sbin:/usr/sbin:\
 ~/bin
 PATH0=`test_path $_path`
 PATH=$PATH0:.
 export PATH0
 
+unset _path
 unset -f test_path
 
 ########## Set other variables ################################################
