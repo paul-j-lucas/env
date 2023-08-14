@@ -6,6 +6,9 @@
 #   Author:   Paul J. Lucas
 ##
 
+# Uncomment for shell debugging.
+#set -x
+
 ME=$(basename $0)
 
 [[ $(uname) == Darwin ]] ||
