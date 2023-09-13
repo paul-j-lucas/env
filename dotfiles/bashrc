@@ -177,11 +177,14 @@ alias pr='\pr -F -o8 -l76 -w80'
 alias psa='ps -A -opid,ppid,ruser,%cpu,command'
 alias psu="ps -u $USER -opid,ppid,%cpu,command"
 alias psag='psa | grep'
-[[ $OS == Darwin ]] && alias pstack='echo thread backtrace all | lldb -p'
 alias psug='psu | grep'
 alias pyc='python -m py_compile'
 alias tm="tmux new-session -As $HOSTNAME"
 command -v vim >/dev/null && alias vi=vim
+
+[[ $OS == Darwin ]] && {
+  alias macsleep='pmset sleepnow'
+}
 
 ##### Typo aliases ############################################################
 
