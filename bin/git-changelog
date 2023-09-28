@@ -49,6 +49,7 @@ while ( <GIT_LOG> ) {
 
   /^[AM]\s+([^\s].*)$/ && do {
     my $file = $1;
+    next if $file =~ m!\.devcontainer/!;
     my $base = basename( $file );
     next if $base =~ m!^(?:ChangeLog|.git\w+|README.md|NEWS)$!;
     unless ( $base =~ m!^(?:Makefile\.\w+)$! ) {
