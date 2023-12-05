@@ -112,7 +112,7 @@ cat > $TERMINAL_XML <<EOF
       <key>StringEncoding</key>
       <string>5</string>
       <key>TerminalOpaqueness</key>
-      <real>0.89</real>
+      <real>0.90</real>
       <key>TextColors</key>
       <string>1.000 1.000 1.000 0.000 0.000 0.000 0.000 1.000 0.000 0.000 1.000 0.000 0.000 0.000 0.000 1.000 1.000 1.000 0.000 0.000 1.000 1.000 1.000 0.000 </string>
       <key>TitleBits</key>
