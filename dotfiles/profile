@@ -91,9 +91,6 @@ EDITOR=`command -v vim`
 [ -z "$EDITOR" ] && EDITOR=vi
 export EDITOR
 
-CDECL_COLORS="caret=32;1:error=31;1:HELP-keyword=1:HELP-nonterm=36:HELP-punct=33;1:HELP-title=34;1:locus=1:PROMPT=32:warning=33;1"
-export CDECL_COLORS
-
 GCC_COLORS="error=31;1:warning=33;1:note=36:caret=32;1:locus=01:quote=01"
 export GCC_COLORS
 
