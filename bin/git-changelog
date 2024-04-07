@@ -26,7 +26,7 @@ while ( <GIT_LOG> ) {
 
   /^\d{4}/ && do {
     if ( @files ) {
-      unless ( $message =~ m!(?:Intermediate|Clean|Comment|Cosmetic|Doxygen|Gnu[Ll]ib|[Tt]weak|Typo)! ) {
+      unless ( $message =~ m!(?:Intermediate|Clean|Comment|Cosmetic|Doxygen|Gnu[Ll]ib|Renaming|[Tt]weak|Typo)! ) {
         if ( $author ne $prev_author || $date ne $prev_date ) {
           print "$date_nl$date  $author <$email>\n\n";
           $prev_author = $author;
