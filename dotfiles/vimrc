@@ -117,7 +117,7 @@ endif
 """""""""" Highlighting
 
 " Set number of terminal colors.
-se t_Co=8
+se t_Co=256
 
 " Turn on syntax highlighting.
 syn enable
