@@ -30,17 +30,8 @@ export CDPATH0 CDPATH
 
 if [ -n "$ZSH_NAME" ]
 then
-  _path=~/.zsh_functions
-  _path=`test_path $_path`
-  if [ -n "$_path" ]
-  then
-    _temp=`echo $FPATH | fgrep .zsh_functions`
-    if [ -z "$_temp" ]
-    then
-      FPATH=$_path:$FPATH
-      export FPATH
-    fi
-    unset _temp
+  if [ -d ~/.zsh_functions -a "${FPATH#*"/.zsh_functions"}" == "$FPATH" ]
+  then FPATH=~/.zsh_functions:$FPATH
   fi
   autoload -Uz compinit
   compinit
