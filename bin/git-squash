@@ -72,7 +72,7 @@ END
     cat >&2 <<END
 
 The "git merge $MAIN" failed (likely due to a merge conflict).
-Your original branch $BRANCH is unmodified.
+Your original branch '$BRANCH' is unmodified.
 You need to do the merge, fix the conflicts, commit, and push (for safety),
 all manually.
 Then you may re-attempt $ME.
@@ -91,7 +91,7 @@ $ECHO git fetch || {
   cat >&2 <<END
 
 The "git fetch" failed (likely due to the remote repository being unavailable).
-Your original branch $BRANCH is unmodified.
+Your original branch '$BRANCH' is unmodified.
 You may re-attempt $ME at a later time.
 END
   exit 4
@@ -105,7 +105,7 @@ $ECHO git merge --squash "$BRANCH" || {
   cat >&2 <<END
 
 The "git merge" failed (likely due to a merge conflict).
-Your original branch $BRANCH is unmodified.
+Your original branch '$BRANCH' is unmodified.
 You need to do the merge, fix the conflicts, commit, and push (for safety),
 all manually.
 Then you may re-attempt $ME.
@@ -128,16 +128,16 @@ then
     if [ -z "$ECHO" ]
     then
       echo
-      echo "Per request (-p), your remote brach $BRANCH, if any, was deleted,"
-      echo "your original branch $BRANCH was replaced by the squashed branch,"
-      echo "and the newly squashed branch $BRANCH was (re)published."
+      echo "Per request (-p), your remote brach '$BRANCH', if any, was deleted,"
+      echo "your original branch '$BRANCH' was replaced by the squashed branch,"
+      echo "and the newly squashed branch '$BRANCH' was (re)published."
     fi
   elif [ -z "$ECHO" ]
   then
     echo
-    echo "Per request (-r), your remote brach $BRANCH, if any, was deleted,"
-    echo "your original branch $BRANCH was replaced by the squashed branch,"
-    echo "but the newly squashed branch $BRANCH was NOT (re)published (no -p)."
+    echo "Per request (-r), your remote brach '$BRANCH', if any, was deleted,"
+    echo "your original branch '$BRANCH' was replaced by the squashed branch,"
+    echo "but the newly squashed branch '$BRANCH' was NOT (re)published (no -p)."
     echo "To (re)publish manually, do:"
     echo
     echo "    git push -u origin $BRANCH"
@@ -146,10 +146,10 @@ elif [ -z "$ECHO" ]
 then
   echo
   echo "You now have a squashed branch named $SQUASHED."
-  echo "Your original branch $BRANCH is unmodified per request (no -r)."
+  echo "Your original branch '$BRANCH' is unmodified per request (no -r)."
   echo
-  echo "You likely want to replace the unmodified $BRANCH branch"
-  echo "by the $SQUASHED branch.  To do that manually, do:"
+  echo "You likely want to replace the unmodified '$BRANCH' branch"
+  echo "by the '$SQUASHED' branch.  To do that manually, do:"
   echo
   echo "    git push origin --delete $BRANCH # only if you pushed the branch"
   echo "    git branch -D $BRANCH"
