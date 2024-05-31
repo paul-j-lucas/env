@@ -30,7 +30,7 @@ export CDPATH0 CDPATH
 
 if [ -n "$ZSH_NAME" ]
 then
-  if [ -d ~/.zsh_functions -a "${FPATH#*"/.zsh_functions"}" == "$FPATH" ]
+  if [ -d ~/.zsh_functions -a "${FPATH#*"/.zsh_functions"}" = "$FPATH" ]
   then FPATH=~/.zsh_functions:$FPATH
   fi
   autoload -Uz compinit
