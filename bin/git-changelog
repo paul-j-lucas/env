@@ -1,7 +1,7 @@
 #! /usr/bin/perl
 ##
 #   Script:   git-changelog -- create a GNU-style ChangeLog from git
-#   Version:  1.5
+#   Version:  1.6
 #
 #   Author:   Paul J. Lucas
 ##
@@ -51,7 +51,7 @@ while ( <GIT_LOG> ) {
     my $file = $1;
     next if $file =~ m!\.(?:devcontainer|github)/!;
     my $base = basename( $file );
-    next if $base =~ m!^(?:ChangeLog|.git\w+|README.md|NEWS)$!;
+    next if $base =~ m!^(?:ChangeLog|\.git.*|README\.md|NEWS)$!;
     unless ( $base =~ m!^(?:Makefile\.\w+)$! ) {
       $file =~ s!^man/man([1-9])/(\w+\.\g1)!$2!;
       $file =~ s!^(?:bin|lib|m4|src)/(.+)$!$1!;
