@@ -29,7 +29,7 @@ shift `expr $OPTIND - 1`
 
 [ $# -gt 0 ] || usage 1
 
-trap 'rm -f /tmp/*_$$_; exit 1' EXIT HUP INT TERM
+trap "x=$?; rm -f /tmp/*_$$_* 2>/dev/null; exit $x" EXIT HUP INT TERM
 temp=/tmp/_$$_temp_file
 
 for file in $*
