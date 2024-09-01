@@ -144,11 +144,11 @@ export PAGER PYTHONSTARTUP
 ########## Source other files #################################################
 
 if [ $OS = Darwin ]
-then dircolors=~/Library/dircolors/dircolors.sh
-else dircolors=~/lib/dircolors/dircolors.sh
+then _dircolors=~/Library/dircolors/dircolors.sh
+else _dircolors=~/lib/dircolors/dircolors.sh
 fi
-[ -f "$dircolors" ] && . $dircolors
-unset dircolors
+[ -f "$_dircolors" ] && . $_dircolors
+unset _dircolors
 
 if [ -n "$BASH" ]
 then
