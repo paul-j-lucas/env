@@ -163,6 +163,7 @@ fi
 
 ##### Convenience aliases #####################################################
 
+alias clang-macros='clang -E -dM -xc /dev/null'
 alias docker-rm-ac='docker ps --all --quiet | xargs docker rm'
 alias docker-rm-ai='docker images --quiet | xargs docker rmi'
 alias docker-rm-all='docker system prune --all'
