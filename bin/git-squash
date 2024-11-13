@@ -1,7 +1,7 @@
-#! /bin/sh
+#! /bin/bash
 ##
 #   git-squash -- Squash all the commits on a branch into a single commit.
-#   Version: 2.2
+#   Version: 2.3
 #
 #   Paul J. Lucas
 ##
@@ -50,6 +50,17 @@ MAIN="$2"
 SQUASHED="${BRANCH}-squashed"
 
 ########## Do it.
+
+read -d '' -r -n1 < <(git status --porcelain) && {
+  cat >&2 <<END
+
+Uncommitted changes or unknown files detected -- squash aborted.
+You need either to commit or revert changes and either to commit or remove
+unknown files first.
+Then you may re-attempt $ME.
+END
+  exit 6
+}
 
 $ECHO git checkout "$MAIN"
 
