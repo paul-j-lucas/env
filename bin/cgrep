@@ -1,7 +1,7 @@
 #! /usr/bin/env bash
 ##
 #   Script:   cgrep -- recursively grep through code
-#   Version:  3.0
+#   Version:  3.1
 ##
 
 # Uncomment for shell debugging.
@@ -50,7 +50,7 @@ unalias() {
 ##
 usage() {
   cat >&2 <<END
-usage: $ME [-cCfghilmnpsy] pattern [glob]
+usage: $ME [-cCfghilmnpsty] pattern [glob]
 
 -c: Grep through .c files only.
 -C: Grep through .cpp files only.
@@ -64,6 +64,7 @@ usage: $ME [-cCfghilmnpsy] pattern [glob]
 -n: Print line numbers.
 -p: Grep through .py files only.
 -s: Follow symbolic links.
+-t: Grep through .tex files only.
 -y: Grep through .y files only.
 
 Default greps through .c, .cpp, .h, .hpp, .l, .lpp, .y, and .ypp files.
@@ -76,7 +77,7 @@ END
 EXEC=exec
 FOLLOW=false
 
-while getopts cCefghilmnpsy opt
+while getopts cCefghilmnpsty opt
 do
   case $opt in
   c) FILES1="*.c"   ;;
@@ -91,6 +92,7 @@ do
   n) LINE_NUMBER=-n ;;
   p) FILES1="*.py"  ;;
   s) FOLLOW=true    ;;
+  t) FILES1="*.tex" ;;
   y) FILES1="*.y"   ;;
   ?) usage 1        ;;
   esac
