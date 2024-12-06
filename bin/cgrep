@@ -50,7 +50,7 @@ unalias() {
 ##
 usage() {
   cat >&2 <<END
-usage: $ME [-cCfghilmnpsty] pattern [glob]
+usage: $ME [-cCfghijlmnpsty] pattern [glob]
 
 -c: Grep through .c files only.
 -C: Grep through .cpp files only.
@@ -59,6 +59,7 @@ usage: $ME [-cCfghilmnpsty] pattern [glob]
 -g: Grep through .go files only.
 -h: Grep through .h files only.
 -i: Perform case-insensitive matching.
+-j: Grep through .json files only.
 -l: Grep through .l files only.
 -m: Grep through .md files only.
 -n: Print line numbers.
@@ -77,7 +78,7 @@ END
 EXEC=exec
 FOLLOW=false
 
-while getopts cCefghilmnpsty opt
+while getopts cCefghijlmnpsty opt
 do
   case $opt in
   c) FILES1="*.c"   ;;
@@ -87,6 +88,7 @@ do
   g) FILES1="*.go"  ;;
   h) FILES1="*.h"   ;;
   i) INSENSITIVE=-i ;;
+  j) FILES1="*.json";;
   l) FILES1="*.l"   ;;
   m) FILES1="*.md"  ;;
   n) LINE_NUMBER=-n ;;
