@@ -1,3 +1,9 @@
 #! /bin/sh
 
+for dotfile in bashrc profile zprofile zshrc
+do [ -L ~/.$dotfile ] || rm -f ~/.$dotfile
+done
+
 make
+
+# vim:set et sw=2 ts=2:
