@@ -1,7 +1,7 @@
 #! /usr/bin/env bash
 ##
 #   Script:   cgrep -- recursively grep through code
-#   Version:  3.1
+#   Version:  3.2
 ##
 
 # Uncomment for shell debugging.
