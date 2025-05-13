@@ -12,7 +12,7 @@
 ME=$(basename $0)
 
 [[ $(uname) == Darwin ]] ||
-  { echo "$ME: this command is supported only on Mac OS X" >&2; exit 1; }
+  { echo "$ME: this command is supported only on macOS" >&2; exit 1; }
 
 check_file() {
   [ -e "$1" ] || { echo "$ME: \"$1\": file not found" >&2; exit 2; }

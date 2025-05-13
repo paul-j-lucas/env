@@ -3,7 +3,7 @@
 ME=$(basename $0)
 
 [[ $(uname) == Darwin ]] ||
-  { echo "$ME: this command is supported only on Mac OS X" >&2; exit 1; }
+  { echo "$ME: this command is supported only on macOS" >&2; exit 1; }
 
 (( $(id -u) == 0 )) ||
   { echo "$ME: effective user ID of root required" >&2; exit 2; }
