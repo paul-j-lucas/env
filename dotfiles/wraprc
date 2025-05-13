@@ -3,6 +3,7 @@ code   = --markdown
 c-like = @code --comment-chars=/*,// --doxygen
 markup = --eos-delimit --para-chars=,:;
 man    = @markup --dot-ignore
+python = --comment-chars=\"\",\#
 script = @code --comment-chars=\#
 
 [PATTERNS]
@@ -13,7 +14,8 @@ script = @code --comment-chars=\#
 *.htm       = markup
 *.html      = markup
 *.java      = c-like
-*.p[ly]     = script
+*.pl        = script
+*.py        = python
 *.sh        = script
 *.[1-9]     = man
 
