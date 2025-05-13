@@ -1,0 +1,19 @@
+#! /usr/bin/env bash
+
+ME=$(basename $0)
+
+[[ $(uname) == Darwin ]] ||
+  { echo "$ME: this command is supported only on macOS" >&2; exit 1; }
+
+[[ $# == 1 ]] || { echo "usage: $ME executable" >&2; exit 1; }
+EXECUTABLE=$1
+
+ENTITLEMENTS=/tmp/entitlements_$$_
+trap 'rm -f /tmp/*_$$_; exit 1' EXIT HUP INT TERM
+
+# https://developer.apple.com/forums/thread/694233?answerId=695943022#695943022
+
+/usr/libexec/PlistBuddy -c 'Add :com.apple.security.get-task-allow bool true' $ENTITLEMENTS
+codesign --sign - --force --entitlements $ENTITLEMENTS $EXECUTABLE
+
+# vim:set et sw=2 ts=2:
