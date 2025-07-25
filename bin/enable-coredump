@@ -9,7 +9,7 @@ ME=$(basename $0)
 EXECUTABLE=$1
 
 ENTITLEMENTS=/tmp/entitlements_$$_
-trap 'rm -f /tmp/*_$$_; exit 1' EXIT HUP INT TERM
+trap "x=$?; rm -f /tmp/*_$$_*; exit $x" EXIT HUP INT TERM
 
 # https://developer.apple.com/forums/thread/694233?answerId=695943022#695943022
 

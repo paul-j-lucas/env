@@ -11,7 +11,7 @@ ME=`basename $0`
 file=$1; shift
 new=/tmp/overwrite-new_$$_
 old=/tmp/overwrite-old_$$_
-trap 'rm -f /tmp/*_$$_; exit 1' EXIT HUP INT TERM
+trap "x=$?; rm -f /tmp/*_$$_*; exit $x" EXIT HUP INT TERM
 
 if "$@" >$new                           # collect input
 then

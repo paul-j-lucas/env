@@ -11,7 +11,7 @@ CUR_FILE="$1"
 OLD_FILE="/tmp/$ME_$$_-$CUR_FILE"
 PATCH_FILE="$CUR_FILE.patch"
 
-trap "x=$?; rm -f /tmp/*_$$_* 2>/dev/null; exit $x" EXIT HUP INT TERM
+trap "x=$?; rm -f /tmp/*_$$_*; exit $x" EXIT HUP INT TERM
 p4 print -q "$CUR_FILE" > $OLD_FILE
 
 [ -f "$CUR_FILE" -a -f "$OLD_FILE" ] || exit 1
