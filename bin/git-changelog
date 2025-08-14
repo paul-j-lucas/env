@@ -1,4 +1,4 @@
-#! /usr/bin/perl
+#! /usr/bin/env perl
 ##
 #   Script:   git-changelog -- create a GNU-style ChangeLog from git
 #   Version:  1.6
