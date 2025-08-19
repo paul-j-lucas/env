@@ -13,7 +13,7 @@ trap "x=$?; rm -f /tmp/*_$$_*; exit $x" EXIT HUP INT TERM
 
 # https://developer.apple.com/forums/thread/694233?answerId=695943022#695943022
 
-/usr/libexec/PlistBuddy -c 'Add :com.apple.security.get-task-allow bool true' $ENTITLEMENTS
+/usr/libexec/PlistBuddy -c 'Add :com.apple.security.get-task-allow bool true' $ENTITLEMENTS >&-
 codesign --sign - --force --entitlements $ENTITLEMENTS $EXECUTABLE
 
 # vim:set et sw=2 ts=2:
