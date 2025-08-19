@@ -1,67 +1,103 @@
-#! /usr/bin/env perl
+#! /usr/bin/env python3
 ##
 #   Script:   git-changelog -- create a GNU-style ChangeLog from git
-#   Version:  1.6
+#   Version:  2.0
 #
 #   Author:   Paul J. Lucas
 ##
 
-use File::Basename;
-use Text::Wrap;
+import  os
+import  re
+import  subprocess
+import  textwrap
 
-$GIT_OPTIONS = "--date=short --name-status --pretty=format:'%ad|%aN|%aE|%s'";
-$Text::Wrap::columns = 80;
+GIT_COMMAND = [
+    'git', 'log',
+    '--date=short',
+    '--name-status',
+    '--pretty=format:%ad|%aN|%aE|%s'
+]
 
-$EMAIL_FROM = 'plucas@.*splunk.com';
-$EMAIL_TO   = 'paul@lucasmail.org';
+EMAIL_FROM = re.compile(r'plucas@.*splunk\.com')
+EMAIL_TO   = 'paul@lucasmail.org'
 
-###############################################################################
+EXCLUDED_WORDS = [
+    'Intermediate',
+    'Clean',
+    'Comment',
+    'Cosmetic',
+    'Doxygen',
+    'Gnu[Ll]ib',
+    'Renaming',
+    '[Tt]weak',
+    'Typo',
+]
+EXCLUDED_RE = re.compile(rf"(?:{'|'.join(EXCLUDED_WORDS)})")
 
-$ME = basename( $0 );
-@files = ();
-
-open( GIT_LOG, "git log $GIT_OPTIONS |" ) or die "$ME: git failed: $!\n";
-while ( <GIT_LOG> ) {
-  chop();
-
-  /^\d{4}/ && do {
-    if ( @files ) {
-      unless ( $message =~ m!(?:Intermediate|Clean|Comment|Cosmetic|Doxygen|Gnu[Ll]ib|Renaming|[Tt]weak|Typo)! ) {
-        if ( $author ne $prev_author || $date ne $prev_date ) {
-          print "$date_nl$date  $author <$email>\n\n";
-          $prev_author = $author;
-          $prev_date = $date;
-          $date_nl = "\n";
-          undef $last_change
-        }
-        $message =~ s!^\[skip ci\] *!!;
-        my $change = join( ", ", @files ) . ": $message";
-        if ( $change ne $last_change ) {
-          print wrap( "   * ", "     ", $change ), "\n";
-          $last_change = $change
-        }
-      }
-      @files = ();
-    }
-    ( $date, $author, $email, $message ) = split( /\|/, $_, 4 );
-    $email = $EMAIL_TO if $email =~ $EMAIL_FROM;
-  };
-
-  /^[AM]\s+([^\s].*)$/ && do {
-    my $file = $1;
-    next if $file =~ m!\.(?:devcontainer|github)/!;
-    my $base = basename( $file );
-    next if $base =~ m!^(?:ChangeLog|\.git.*|README\.md|NEWS)$!;
-    unless ( $base =~ m!^(?:Makefile\.\w+)$! ) {
-      $file =~ s!^man/man([1-9])/(\w+\.\g1)!$2!;
-      $file =~ s!^(?:bin|lib|m4|src)/(.+)$!$1!;
-      $file =~ s!^test(?:/\w+)?/(.+)!$1!;
-    }
-    push( @files, $file );
-  };
-
-} # while
-close( GIT_LOG );
+FILE_EXCLUDES = [
+    r'^ChangeLog$',
+    r'^\.git.*$',
+    r'^README\.md$',
+    r'^NEWS$',
+]
 
 ###############################################################################
-# vim:set et sw=2 ts=2:
+
+ME = os.path.basename(__file__)
+
+proc = subprocess.Popen(GIT_COMMAND, stdout=subprocess.PIPE, text=True)
+
+files = []
+prev_author = prev_date = last_change = None
+date_nl = ''
+
+for line in proc.stdout:
+    line = line.rstrip('\n')
+
+    if re.match(r'^\d{4}', line):
+        if files:
+            if not EXCLUDED_RE.search(message):
+                if author != prev_author or date != prev_date:
+                    print(f'{date_nl}{date}  {author} <{email}>\n')
+                    prev_author, prev_date = author, date
+                    date_nl = '\n'
+                    last_change = None
+
+                message = re.sub(r'^\[skip ci\]\s*', '', message)
+                change = f'{", ".join(files)}: {message}'
+                if change != last_change:
+                    print(textwrap.fill(change,
+                                        break_long_words=False,
+                                        break_on_hyphens=False,
+                                        initial_indent='   * ',
+                                        subsequent_indent='     ',
+                                        width=79))
+                    last_change = change
+            files = []
+
+        date, author, email, message = line.split('|', 3)
+        if EMAIL_FROM.match(email):
+            email = EMAIL_TO
+        continue
+
+    m = re.match(r'^[AM]\s+([^\s].*)$', line)
+    if m:
+        file = m.group(1)
+        if re.search(r'\.(?:devcontainer|github)/', file):
+            continue
+
+        base = os.path.basename(file)
+        if any(re.match(pattern, base) for pattern in FILE_EXCLUDES):
+            continue
+
+        if not re.match(r'^(?:Makefile\.\w+)$', base):
+            file = re.sub(r'^man/man([1-9])/(\w+\.\1)', r'\2', file)
+            file = re.sub(r'^(?:bin|lib|m4|src)/(.+)', r'\1', file)
+            file = re.sub(r'^test(?:/\w+)?/(.+)', r'\1', file)
+
+        files.append(file)
+
+proc.stdout.close()
+proc.wait()
+
+# vim:set et sw=4 ts=4:
