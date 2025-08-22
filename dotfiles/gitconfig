@@ -2,6 +2,9 @@
 name = Paul J. Lucas
 email = paul@lucasmail.org
 
+[http]
+sslverify = false
+
 [init]
 defaultBranch = master
 
@@ -24,7 +27,7 @@ comti = commit
 d = diff
 delete-remote-tag = "!f() { git push origin :refs/tags/$1; }; f"
 ds = diff --staged
-dsw = diff --staged -w
+dsw = ds -w
 dw = diff -w
 dws = dsw
 fix = "!f() { git gc --prune=now; git remote prune origin; }; f"
@@ -44,13 +47,11 @@ unpub = unpublish
 unpublish = push origin --delete
 who = "!f() { git blame $1 | cut -c15-36 | sort | uniq -c | sort -nr; }; f"
 
-[include]
-path = ~/.gitconfig-local
-
 [filter "lfs"]
 	clean = git-lfs clean -- %f
 	smudge = git-lfs smudge -- %f
 	process = git-lfs filter-process
 	required = true
-[http]
-	sslverify = false
+
+[include]
+path = ~/.gitconfig-local
