@@ -19,4 +19,4 @@ script = @code --comment-chars=\#
 *.sh        = script
 *.[1-9]     = man
 
-# vim:set et sw=2 ts=2:
+# vim:set syntax=dosini et sw=2 ts=2:
