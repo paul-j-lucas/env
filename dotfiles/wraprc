@@ -3,7 +3,7 @@ code   = --markdown
 c-like = @code --comment-chars=/*,// --doxygen
 markup = --eos-delimit --para-chars=,:;
 man    = @markup --dot-ignore
-python = --comment-chars=\"\",\#
+python = @code --comment-chars=\"\",\#
 script = @code --comment-chars=\#
 
 [PATTERNS]
