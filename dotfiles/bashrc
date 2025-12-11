@@ -184,9 +184,7 @@ alias tgrep='cgrep -t'
 alias tm="tmux new-session -As $HOSTNAME"
 command -v vim >/dev/null && alias vi=vim
 
-[[ $OS == Darwin ]] && {
-  alias macsleep='pmset sleepnow'
-}
+[[ $OS == Darwin ]] && alias macsleep='pmset sleepnow'
 
 ##### Typo aliases ############################################################
 
