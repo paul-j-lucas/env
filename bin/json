@@ -14,10 +14,7 @@ for line in input:
     line = line.strip()
     if not line:
         continue
-    try:
-        obj = json.loads(line)
-    except json.JSONDecodeError:
-        continue
+    obj = json.loads(line)
     if not first:
         print('')
     else:
