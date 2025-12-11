@@ -170,7 +170,6 @@ alias docker-rm-all='docker system prune --all'
 alias fn='find . -name'
 alias ftp='\ftp -i'
 alias gcc-macros='gcc -E -dM -xc /dev/null'
-alias ggrep='cgrep -g'
 alias jgrep='cgrep -j'
 alias mgrep='cgrep -m'
 command -v cpus >/dev/null && alias mj="make -j$(( $(cpus) + 1 ))"
