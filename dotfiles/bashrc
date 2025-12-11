@@ -325,7 +325,6 @@ mycd .
 
 unset -f find_path
 unset GNU_PATH
-unset grep
 unset LOCAL_PATH
 unset ls
 unset ls_nl
