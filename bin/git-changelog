@@ -1,7 +1,7 @@
 #! /usr/bin/env python3
 ##
 #   Script:   git-changelog -- create a GNU-style ChangeLog from git
-#   Version:  2.0
+#   Version:  2.1
 #
 #   Author:   Paul J. Lucas
 ##
@@ -25,6 +25,7 @@ EXCLUDED_WORDS = [
     'Intermediate',
     'Clean',
     'Comment',
+    'copyright',
     'Cosmetic',
     'Doxygen',
     'Gnu[Ll]ib',
