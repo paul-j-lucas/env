@@ -1,0 +1,98 @@
+#! /usr/bin/env python3
+
+import argparse
+import os
+import re
+import sys
+
+ME = os.path.basename(__file__)
+
+AUTHOR_RE = re.compile(r'\bLucas\b')
+
+EXCLUDE_FILES = {
+    'AUTHORS',
+    'COPYING',
+    'ChangeLog',
+    'INSTALL',
+    'NEWS'
+}
+
+########## Functions ##########################################################
+
+def message(*objs):
+    """Prints a message to standard output."""
+    print(ME + ':', *objs)
+
+
+def warning(*objs):
+    """Prints an warning message to standard error."""
+    print(ME + ':', 'error:', *objs, file = sys.stderr)
+
+
+def error(*objs):
+    """Prints an error message to standard error and exits."""
+    warning(*objs)
+    sys.exit(1)
+
+########## Process command line ###############################################
+
+parser = argparse.ArgumentParser(
+    description='Update copyright years in files recursively.'
+)
+parser.add_argument(
+    'year', type=int, help='the new 4-digit year (e.g., 2026)'
+)
+
+args = parser.parse_args()
+
+if args.year < 2000 or args.year > 2999:
+    error(f'{args.year}: invalid year; must be 2000-2999')
+
+###############################################################################
+
+this_year = args.year
+last_year = this_year - 1
+
+# Change {last_year} -> {last_year}-{this_year}
+EXTEND_RE = re.compile(rf'(\s){last_year}\b')
+
+# Change {year}-{last_year} -> {year}-{this_year}
+RANGE_RE = re.compile(rf'(\d{{4}}-){last_year}\b')
+
+for root, dirs, files in os.walk('.'):
+    if '.git' in dirs:
+        dirs.remove('.git')
+
+    for filename in files:
+        if filename in EXCLUDE_FILES:
+            continue
+        filepath = os.path.join(root, filename)
+
+        try:
+            with open(filepath, 'r', encoding='utf-8') as f:
+                content = f.read()
+        except (UnicodeDecodeError, PermissionError):
+            continue
+
+        if not AUTHOR_RE.search(content):
+            continue
+
+        orig_content = content
+
+        # Note: We use \g<1> to put back the captured prefix (the date-dash or
+        # the whitespace)
+
+        content = RANGE_RE.sub(rf'\g<1>{this_year}', content)
+        content = EXTEND_RE.sub(rf'\g<1>{last_year}-{this_year}', content)
+
+        if content == orig_content:
+            continue
+
+        try:
+            with open(filepath, 'w', encoding='utf-8') as f:
+                f.write(content)
+            message(f'updated {filepath}')
+        except PermissionError:
+            warning(f'{filepath}: permission denied')
+
+# vim:set et sw=4 ts=4:
