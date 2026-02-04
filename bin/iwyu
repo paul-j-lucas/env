@@ -1,7 +1,7 @@
 #! /usr/bin/env bash
 
 exec include-what-you-use \
-  -Xiwyu --keep=config.h \
+  -Xiwyu --keep='*config.h' \
   -Xiwyu --no_fwd_decls \
   -Xiwyu --quoted_includes_first \
   $*
