@@ -1,9 +1,0 @@
-#! /usr/bin/env bash
-
-exec include-what-you-use \
-  -Xiwyu --keep='*config.h' \
-  -Xiwyu --no_fwd_decls \
-  -Xiwyu --quoted_includes_first \
-  $*
-
-# vim:set et sw=2 ts=2:
