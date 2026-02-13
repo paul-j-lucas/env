@@ -166,7 +166,7 @@ fi
 alias clang-macros='clang -E -dM -xc /dev/null'
 alias docker-rm-ac='docker ps --all --quiet | xargs docker rm'
 alias docker-rm-ai='docker images --quiet | xargs docker rmi'
-alias docker-rm-all='docker system prune --all'
+alias docker-rm-all='docker system prune --all --force'
 alias fn='find . -name'
 alias ftp='\ftp -i'
 alias gcc-macros='gcc -E -dM -xc /dev/null'
