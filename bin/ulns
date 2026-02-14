@@ -11,12 +11,15 @@
 
 ME=`basename $0`
 
+##### Functions ###############################################################
+
 usage() {
   echo "usage: $ME [-s] file ..." >&2
   exit $1
 }
 
-##### Parse command-line options
+##### Command Line ############################################################
+
 SILENT=false
 while getopts s opt
 do
@@ -26,8 +29,9 @@ do
   esac
 done
 shift `expr $OPTIND - 1`
-
 [ $# -gt 0 ] || usage 1
+
+##### Main ####################################################################
 
 trap "x=$?; rm -f /tmp/*_$$_*; exit $x" EXIT HUP INT TERM
 temp=/tmp/_$$_temp_file

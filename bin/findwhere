@@ -11,6 +11,8 @@
 
 ME=$(basename $0)
 
+##### Functions ###############################################################
+
 unalias() {
   local rv=$(alias $1 2>/dev/null | cut -f2 -d"'")
   echo ${rv:-$1}
@@ -28,10 +30,11 @@ END
   exit $1
 }
 
+##### Command Line ############################################################
+
 FOLLOW=false
 RECURSIVE=false
 
-##### Parse command-line options
 while getopts irs opt
 do
   case $opt in
@@ -41,12 +44,12 @@ do
   ?) usage 1 ;;
   esac
 done
-shift $(( $OPTIND - 1 ))
+shift $(( OPTIND - 1 ))
 
 (( $# > 0 )) || usage 1
 PATTERN=$1
 
-###############################################################################
+##### Main ####################################################################
 
 # If recursive and ripgrep is available, use that.
 if $RECURSIVE && command -v rg >/dev/null 2>/dev/null
@@ -72,5 +75,4 @@ else
   $GREP "$PATTERN" $*
 fi
 
-###############################################################################
 # vim:set et sw=2 ts=2:

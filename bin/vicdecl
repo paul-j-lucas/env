@@ -12,6 +12,8 @@
 
 ME=`basename $0`
 
+##### Functions ###############################################################
+
 usage() {
   cat >&2 <<END
 usage: $ME [-fis] name [file...]
@@ -26,9 +28,10 @@ END
   exit $1
 }
 
+##### Command Line ############################################################
+
 FIND_FUNCTION=false
 
-##### Parse command-line options
 while getopts firs opt
 do
   case $opt in
@@ -43,6 +46,8 @@ shift `expr $OPTIND - 1`
 
 [ $# -gt 0 ] || usage 21
 NAME=$1; shift
+
+##### Main ####################################################################
 
 if $FIND_FUNCTION
 then

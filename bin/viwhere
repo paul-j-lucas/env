@@ -11,6 +11,8 @@
 
 ME=$(basename $0)
 
+##### Functions ###############################################################
+
 usage() {
   cat >&2 <<END
 usage: $ME [-iRsv] find-pattern [file...]
@@ -25,9 +27,10 @@ END
   exit $1
 }
 
+##### Command Line ############################################################
+
 VERY_MAGIC=false
 
-##### Parse command-line options
 while getopts irRsv opt
 do
   case $opt in
@@ -44,7 +47,7 @@ shift $(( $OPTIND - 1 ))
 (( "$#" != 0 )) || usage 11
 PATTERN="$1"; shift
 
-###############################################################################
+##### Main ####################################################################
 
 FILES=$(findwhere $INSENSITIVE $FOLLOW_SYMLINKS $RECURSIVE "$PATTERN" "$@")
 [ "$FILES" ] || exit 13
@@ -57,5 +60,4 @@ VI=$(command -v vim)
 
 exec $VI $READ_ONLY +/"$PATTERN" $FILES
 
-###############################################################################
 # vim:set et sw=2 ts=2:

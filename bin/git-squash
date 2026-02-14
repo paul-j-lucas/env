@@ -11,9 +11,9 @@ set -e # stop on error
 # uncomment to debug
 #set -x
 
-###############################################################################
-
 ME=`basename $0`
+
+##### Functions ###############################################################
 
 usage() {
   cat >&2 <<END
@@ -27,6 +27,8 @@ usage: $ME [-dmnpr] <branch-name> <main-branch-name>
 END
   exit $1
 }
+
+##### Command Line ############################################################
 
 MERGE_FROM_MAIN=true
 PUBLISH=false
@@ -49,7 +51,7 @@ BRANCH="$1"
 MAIN="$2"
 SQUASHED="${BRANCH}-squashed"
 
-########## Do it.
+##### Main ####################################################################
 
 read -d '' -r -n1 < <(git status --porcelain) && {
   cat >&2 <<END
@@ -171,5 +173,4 @@ then
   echo "    git push -u origin $BRANCH"
 fi
 
-###############################################################################
 # vim:set et sw=2 ts=2:

@@ -57,5 +57,4 @@ unset pschar
 unset psprefix
 unset root
 
-###############################################################################
 # vim:set et sw=2 ts=2:

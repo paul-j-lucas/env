@@ -5,7 +5,7 @@ ME=$(basename $0)
 [[ $(uname) == Darwin ]] ||
   { echo "$ME: this command is supported only on macOS" >&2; exit 1; }
 
-[[ $# == 1 ]] || { echo "usage: $ME executable" >&2; exit 1; }
+(( $# == 1 )) || { echo "usage: $ME executable" >&2; exit 1; }
 EXECUTABLE=$1
 
 ENTITLEMENTS=/tmp/entitlements_$$_

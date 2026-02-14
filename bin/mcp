@@ -8,6 +8,8 @@
 
 ME=`basename $0`
 
+##### Functions ###############################################################
+
 usage() {
   cat >&2 <<END
 usage: $ME [-dn] partial-file-name1 partial-file-name2
@@ -17,7 +19,8 @@ END
   exit $1
 }
 
-##### Parse command-line options
+##### Command Line ############################################################
+
 while getopts dn opt
 do
   case $opt in
@@ -26,6 +29,8 @@ do
 done
 shift `expr $OPTIND - 1`
 [ $# -eq 2 ] || usage 1
+
+##### Main ####################################################################
 
 ls -d *"$1"* | while read file
 do

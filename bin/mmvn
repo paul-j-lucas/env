@@ -7,6 +7,9 @@
 ##
 
 ME=$(basename $0)
+NUM_RE='^[0-9]+$'
+
+##### Functions ###############################################################
 
 error() {
   echo "$ME: $*"
@@ -23,10 +26,9 @@ END
   exit 64
 }
 
-NUM_RE='^[0-9]+$'
-n=0
+##### Command Line ############################################################
 
-##### Parse command-line options
+n=0
 while getopts dn: opt
 do
   case $opt in
@@ -40,6 +42,8 @@ done
 shift $(( OPTIND - 1 ))
 (( $# >= 2 )) || usage
 PREFIX=$1; shift
+
+##### Main ####################################################################
 
 for file in $*
 do
