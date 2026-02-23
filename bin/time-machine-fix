@@ -1,0 +1,29 @@
+#! /usr/bin/env bash
+##
+#   Potential fix for Time Machine always doing full backups.
+#
+#   Adapted from <https://apple.stackexchange.com/a/476007/30226>.
+##
+
+ME=$(basename $0)
+
+[[ $(uname) == Darwin ]] ||
+  { echo "$ME: this command is supported only on macOS" >&2; exit 1; }
+
+set -e # stop on error
+
+ATTRIBUTES=(
+  com.apple.backupd.BackupMachineAddress
+  com.apple.backupd.ComputerName
+  com.apple.backupd.HostUUID
+  com.apple.backupd.ModelID
+  com.apple.timemachine.private.structure.metadata
+)
+
+DIR=/System/Volumes/Data
+
+for attr in "${ATTRIBUTES[@]}"
+do xattr -d $attr $DIR
+done
+
+# vim:set et sw=2 ts=2:
