@@ -47,10 +47,9 @@ def write_impl(debugger, raw_args, result, internal_dict):
 
     # Write to file.
     output = rv.GetOutput() or rv.GetError()
-    f = open(args.filename, 'w')
-    f.write("(lldb) " + args.command + '\n\n')
-    f.write(strip_esc_seq(output))
-    f.close()
+    with open(args.filename, 'w') as f:
+        f.write(f"(lldb) {args.command}\n\n")
+        f.write(strip_esc_seq(output))
 
 
 ###############################################################################
