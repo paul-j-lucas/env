@@ -1,0 +1,17 @@
+[
+  { "symbol": [ "getopt_long", "private", "<getopt.h>", "public" ] },
+  { "symbol": [ "no_argument", "private", "<getopt.h>", "public" ] },
+  { "symbol": [ "optarg", "private", "<getopt.h>", "public" ] },
+  { "symbol": [ "opterr", "private", "<getopt.h>", "public" ] },
+  { "symbol": [ "optind", "private", "<getopt.h>", "public" ] },
+  { "symbol": [ "option", "private", "<getopt.h>", "public" ] },
+  { "symbol": [ "optional_argument", "private", "<getopt.h>", "public" ] },
+  { "symbol": [ "optopt", "private", "<getopt.h>", "public" ] },
+  { "symbol": [ "required_argument", "private", "<getopt.h>", "public" ] },
+  { "symbol": [ "rpl_getopt_long", "private", "<getopt.h>", "public" ] },
+  { "symbol": [ "rpl_optarg", "private", "<getopt.h>", "public" ] },
+  { "symbol": [ "rpl_opterr", "private", "<getopt.h>", "public" ] },
+  { "symbol": [ "rpl_optind", "private", "<getopt.h>", "public" ] },
+  { "symbol": [ "rpl_optopt", "private", "<getopt.h>", "public" ] }
+]
+# vim:set et sw=2 ts=2:

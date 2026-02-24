@@ -1,0 +1,71 @@
+#! /usr/bin/env bash
+##
+#   Script:   iwyu -- front-end to include-what-you-use
+#   Version:  1.0
+##
+
+# Uncomment for shell debugging.
+#set -x
+
+ME=$(basename $0)
+IMP_FILE="iwyu.imp"
+INCLUDE_DIR="lib"
+
+##### Functions ###############################################################
+
+usage() {
+  cat >&2 <<END
+usage: $ME [-i path.imp] [-I include-dir] source-file
+END
+  exit 1
+}
+
+##### Command Line ############################################################
+
+while getopts i:I: opt
+do
+  case $opt in
+  i) IMP_PATH="$OPTARG"     ;;
+  I) INCLUDE_PATH="$OPTARG" ;;
+  esac
+done
+shift $(( OPTIND - 1 ))
+(( $# == 1 )) || usage
+SOURCE_FILE="$1"
+
+##### Main ####################################################################
+
+if [[ -z "$IMP_PATH" ]]
+then
+  if [[ -f "$IMP_FILE" ]]
+  then IMP_PATH="$IMP_FILE"
+  elif [[ -f "../$IMP_FILE" ]]
+  then IMP_PATH="../$IMP_FILE"
+  else
+    if [[ $(uname) == Darwin ]]
+    then USER_LIB_DIR="$HOME/Library"
+    else USER_LIB_DIR="$HOME/lib"
+    fi
+    [[ -f "$USER_LIB_DIR/$IMP_FILE" ]] && IMP_PATH="$USER_LIB_DIR/$IMP_FILE"
+  fi
+fi
+[[ -n "$IMP_PATH" ]] && MAPPING_OPT="-Xiwyu --mapping_file=$IMP_PATH"
+
+if [[ -z "$INCLUDE_PATH" ]]
+then
+  if [[ -d "$INCLUDE_DIR" ]]
+  then INCLUDE_PATH="$INCLUDE_DIR"
+  elif [[ -d "../$INCLUDE_DIR" ]]
+  then INCLUDE_PATH="../$INCLUDE_DIR"
+  fi
+fi
+[[ -n "$INCLUDE_PATH" ]] && INCLUDE_OPT="-I$INCLUDE_PATH"
+
+exec include-what-you-use $INCLUDE_OPT $MAPPING_OPT \
+  -Xiwyu --no_fwd_decls \
+  -Xiwyu --quoted_includes_first \
+  -Xiwyu --transitive_includes_only \
+  -Xiwyu --verbose=3 \
+  $SOURCE_FILE
+
+# vim:set et sw=2 ts=2:
