@@ -1,5 +1,7 @@
 #! /usr/bin/env bash
 
+set -e # stop on error
+
 ME=$(basename $0)
 
 [[ $(uname) == Darwin ]] ||
@@ -11,6 +13,9 @@ ME=$(basename $0)
 # Since we're running as root, use only the explicit full path.
 PORT=/opt/local/bin/port
 
-$PORT selfupdate && $PORT upgrade -c -u outdated
+$PORT selfupdate
+$PORT upgrade -c -u outdated
+$PORT uninstall inactive
+$PORT uninstall leaves
 
 # vim:set et sw=2 ts=2:
