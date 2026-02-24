@@ -15,7 +15,7 @@ PORT=/opt/local/bin/port
 
 $PORT selfupdate
 $PORT upgrade -c -u outdated
-$PORT uninstall inactive
-$PORT uninstall leaves
+$PORT uninstall inactive || true
+$PORT uninstall leaves || true
 
 # vim:set et sw=2 ts=2:
