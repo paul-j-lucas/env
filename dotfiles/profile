@@ -5,6 +5,9 @@
 #   Author: Paul J. Lucas
 ##
 
+# Uncomment for shell debugging.
+#set -x
+
 # Set a minimal path so basic Unix commands work.
 PATH=/bin:/usr/bin
 export PATH
@@ -43,16 +46,6 @@ _path=/usr/share/info:\
 INFOPATH=`test_path $_path`
 export INFOPATH
 
-_path=~/local/lib
-_path=`test_path $_path`
-if [ -n "$_path" ]
-then
-  if [ $OS = Darwin ]
-  then DYLD_LIBRARY_PATH=$_path; export DYLD_LIBRARY_PATH
-  else LD_LIBRARY_PATH=$_path; export LD_LIBRARY_PATH
-  fi
-fi
-
 _path=~/local/share/man:\
 /usr/share/man:\
 /Applications/Xcode.app/Contents/Developer/usr/share/man:\
@@ -82,6 +75,23 @@ _path=~/local/bin:\
 PATH0=`test_path $_path`
 PATH=$PATH0:.
 export PATH0
+
+_path=~/local/lib
+case $OS in
+Darwin)
+  command -v llvm-config >/dev/null && _path="$_path:`llvm-config --libdir`"
+  _path=`test_path $_path`
+  if [ -n "$_path" ]
+  then DYLD_FALLBACK_LIBRARY_PATH="$_path"; export DYLD_FALLBACK_LIBRARY_PATH
+  fi
+  ;;
+*)
+  _path=`test_path $_path`
+  if [ -n "$_path" ]
+  then LD_LIBRARY_PATH="$_path"; export LD_LIBRARY_PATH
+  fi
+  ;;
+esac
 
 unset _path
 unset -f test_path
