@@ -25,12 +25,12 @@ comit = commit
 commti = commit
 comti = commit
 d = diff
-delete-remote-tag = "!f() { git push origin :refs/tags/$1; }; f"
+delete-remote-tag = "!git push origin :refs/tags/$1"
 ds = diff --staged
 dsw = ds -w
 dw = diff -w
 dws = dsw
-fix = "!f() { git gc --prune=now; git remote prune origin; }; f"
+fix = "!git gc --prune=now; git remote prune origin"
 last-tag = describe --tags --abbrev=0
 log = log --follow
 log-since-tag = "!git log $(git last-tag).."
@@ -46,7 +46,7 @@ top = rev-parse --show-toplevel
 undo-commit = reset HEAD~
 unpub = unpublish
 unpublish = push origin --delete
-who = "!f() { git blame $1 | cut -c15-36 | sort | uniq -c | sort -nr; }; f"
+who = "!git blame $1 | cut -c15-36 | sort | uniq -c | sort -nr"
 
 [filter "lfs"]
 	clean = git-lfs clean -- %f
