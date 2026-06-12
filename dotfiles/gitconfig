@@ -33,6 +33,7 @@ dws = dsw
 fix = "!f() { git gc --prune=now; git remote prune origin; }; f"
 last-tag = describe --tags --abbrev=0
 log = log --follow
+log-since-tag = "!git log $(git last-tag).."
 pick = cherry-pick --edit --no-commit -x
 psuh = push
 pub = publish
