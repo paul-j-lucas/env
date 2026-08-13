@@ -41,7 +41,7 @@ publish = push -u origin
 rename = branch -m
 s = status
 sha = rev-parse HEAD
-since-tag = !git log "$(git describe --tags --abbrev=0 HEAD)..HEAD"
+since-tag = !git log "$(git describe --tags --abbrev=0 HEAD)..HEAD" --invert-grep --grep=Comment --grep=Cosmetic --grep=Doxygen --grep=Updated
 stat = status
 top = rev-parse --show-toplevel
 undo-commit = reset HEAD~
