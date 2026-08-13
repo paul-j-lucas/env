@@ -33,7 +33,7 @@ dws = dsw
 fix = "!git gc --prune=now; git remote prune origin"
 last-tag = describe --tags --abbrev=0
 log = log --follow
-log-since-tag = "!git log $(git last-tag).."
+log-since-tag = !git log $(git last-tag)..  --invert-grep --grep=Comment --grep=Cosmetic --grep=Doxygen --grep=Renaming --grep=Updated
 pick = cherry-pick --edit --no-commit -x
 psuh = push
 pub = publish
@@ -41,7 +41,6 @@ publish = push -u origin
 rename = branch -m
 s = status
 sha = rev-parse HEAD
-since-tag = !git log "$(git describe --tags --abbrev=0 HEAD)..HEAD" --invert-grep --grep=Comment --grep=Cosmetic --grep=Doxygen --grep=Updated
 stat = status
 top = rev-parse --show-toplevel
 undo-commit = reset HEAD~
