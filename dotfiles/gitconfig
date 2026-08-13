@@ -39,8 +39,9 @@ psuh = push
 pub = publish
 publish = push -u origin
 rename = branch -m
-sha = rev-parse HEAD
 s = status
+sha = rev-parse HEAD
+since-tag = !git log "$(git describe --tags --abbrev=0 HEAD)..HEAD"
 stat = status
 top = rev-parse --show-toplevel
 undo-commit = reset HEAD~
