@@ -18,8 +18,7 @@ GIT_COMMAND = [
     '--pretty=format:%ad|%aN|%aE|%s'
 ]
 
-EMAIL_FROM = re.compile(r'plucas@.*splunk\.com')
-EMAIL_TO   = 'paul@lucasmail.org'
+EMAIL_TO = '7366785+paul-j-lucas@users.noreply.github.com'
 
 EXCLUDED_WORDS = [
     'Intermediate',
@@ -77,8 +76,7 @@ for line in proc.stdout:
             files = []
 
         date, author, email, message = line.split('|', 3)
-        if EMAIL_FROM.match(email):
-            email = EMAIL_TO
+        email = EMAIL_TO
         continue
 
     m = re.match(r'^[AM]\s+([^\s].*)$', line)
