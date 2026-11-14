@@ -112,7 +112,7 @@ if exists("+viminfo")
   se   viminfo=
 endif
 if exists("+wildignore")
-  se   wildignore=*.class,*.swp,*.o
+  se   wildignore=*.class,*.gcda,*.gcno,*.swp,*.o,*.trs
 endif
 if exists("+wildmenu")
   se   wildmenu
